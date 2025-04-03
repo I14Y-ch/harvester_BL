@@ -285,6 +285,9 @@ def main():
     log += "\nUpdated datasets:\n"
     for item in updated_datasets:
         log += f"\n- {item}"
+    log += "\nUnchanged datasets:\n"
+    for item in unchanged_datasets:
+        log += f"\n- {item}"
 
     # Save log in root directory
     log_path = os.path.join(workspace, 'harvest_log.txt')
