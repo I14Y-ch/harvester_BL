@@ -18,7 +18,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         response = requests.get(
             API_BL_URL,
             params=params,
-            proxies=PROXIES,
+            #proxies=PROXIES,
             verify=False,
             timeout=30
         )
