@@ -13,7 +13,6 @@ def fetch_datasets_from_api() -> List[Dict]:
     """Fetches a single test dataset from API for testing purposes"""
     datasets = []
     try:
-        # Request just 1 dataset
         params = {"skip": 0, "limit": 100}
         response = requests.get(
             API_BL_URL,
@@ -34,8 +33,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         graph = Graph()
         graph.parse(data=response.text, format='xml')
 
-        # Process just the first dataset we find
-        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:2]:
+        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:3]:
             print(f"Processing test dataset URI: {dataset_uri}")
             dataset = extract_dataset(graph, dataset_uri)
             
@@ -62,7 +60,7 @@ def fetch_datasets_from_api() -> List[Dict]:
 #             response = requests.get(
 #                 "https://dam-api.bfs.admin.ch/hub/api/ogd/harvest",
 #                 params=params,
-#                 proxies=PROXIES,
+#                 #proxies=PROXIES,
 #                 verify=False,
 #                 timeout=30
 #             )
@@ -137,7 +135,8 @@ def change_level_i14y(id, level, token):
             'Accept': '*/*',
             'Accept-encoding': 'json'
         }, 
-        verify=False
+        verify=False, 
+        #proxies=PROXIES
     )
     response.raise_for_status()
     return response.json()
@@ -154,7 +153,8 @@ def change_status_i14y(id, status, token):
             'Accept': '*/*',
             'Accept-encoding': 'json'
         }, 
-        verify=False
+        verify=False, 
+        #proxies=PROXIES
     )
     response.raise_for_status()
     return response.json()
@@ -210,7 +210,7 @@ def main():
             previous_ids = json.load(f)
             print("Successfully loaded previous data")
     except FileNotFoundError:
-        previous_ids = {}  # Start with empty dict if no previous data
+        previous_ids = {}  
         print("No previous data found, starting fresh")
     
     # Get yesterday's date in UTC+1
@@ -222,7 +222,6 @@ def main():
     updated_datasets = []
     unchanged_datasets = []
     
-    # Fetch datasets directly from API
     print("Fetching datasets from API...")
     datasets = fetch_datasets_from_api()
     
@@ -249,14 +248,15 @@ def main():
                 print(f"[DEBUG] Payload created: {json.dumps(payload, indent=2)[:500]}...") 
                 response_id, action = submit_to_api(payload, identifier, previous_ids)
                 print(f"[DEBUG] API response: {response_id}")
+                response_id = response_id.strip('"')
 
                 if action == "created":
                     created_datasets.append(identifier)
-                    previous_ids[identifier] = {'id': response_id}  # Store the UUID directly
+                    previous_ids[identifier] = {'id': response_id} 
 
                     try:
-                        change_level_i14y(response_id, 'Public', API_TOKEN)  # Use response_id directly
-                        change_status_i14y(response_id, 'Registered', API_TOKEN)
+                        change_level_i14y(response_id, 'Public', API_TOKEN)  
+                        change_status_i14y(response_id, 'Recorded', API_TOKEN)
                         print(f"Set i14y level to Public and status to Registered for {identifier}")
                     except Exception as e:
                         print(f"Error setting i14y level/status for {identifier}: {str(e)}")

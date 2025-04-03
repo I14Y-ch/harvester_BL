@@ -18,8 +18,8 @@ DEFAULT_PUBLISHER = {
 # File format (.xml and .rdf -> "xml", .ttl -> "ttl")
 FILE_FORMAT = "xml"
 
-# Proxies
+# Proxies if necessary 
 PROXIES = {
-    "http": "http://proxy-bvcol.admin.ch:8080",
-    "https": "http://proxy-bvcol.admin.ch:8080"
+    "http": "http://proxy...",
+    "https": "http://proxy..."
 }
