@@ -129,7 +129,7 @@ def create_dataset_payload(dataset):
 def change_level_i14y(id, level, token):
     """Change publication level of a dataset in i14y"""
     response = requests.put(
-        url=f"{API_BASE_URL}/{id}/publication-level",
+        url=f"{API_BASE_URL}/datasets/{id}/publication-level",
         params={'level': level}, 
         headers={
             'Authorization': token, 
@@ -146,7 +146,7 @@ def change_level_i14y(id, level, token):
 def change_status_i14y(id, status, token):
     """Change registration status of a dataset in i14y"""
     response = requests.put(
-        url=f"{API_BASE_URL}/{id}/registration-status",
+        url=f"{API_BASE_URL}/datasets/{id}/registration-status",
         params={'status': status}, 
         headers={
             'Authorization': token, 
