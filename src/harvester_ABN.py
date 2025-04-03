@@ -139,7 +139,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         # Request just 1 dataset
         params = {"skip": 0, "limit": 100}
         response = requests.get(
-            "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat",
+            API_BL_URL,
             params=params,
             proxies=PROXIES,
             verify=False,

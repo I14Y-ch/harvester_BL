@@ -1,4 +1,4 @@
-name: I14Y Harvester Unisante catalogue ABN
+name: I14Y Harvester OGD canton Basel-Landschaft catalogue ABN
 
 on:
   schedule:
@@ -18,10 +18,10 @@ jobs:
       continue-on-error: true
       with:
           name: IDS-I14Y-json
-          workflow: unisante_catalogue_ABN.yml
+          workflow: OGD_BL.yml
           workflow_conclusion: success
           if_no_artifact_found: warn
-          path: unisante/data
+          path: OGD_BL/data
         
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -57,12 +57,9 @@ jobs:
 
     - name: Run harvester script
       env:
-        GET_ENDPOINT_FROM_UNISANTE: ${{ secrets.GET_ENDPOINT_FROM_UNISANTE }}
-        PUT_ENDPOINT_TO_I14Y: ${{ secrets.PUT_ENDPOINT_TO_I14Y }}
-        POST_ENDPOINT_TO_I14Y: ${{ secrets.POST_ENDPOINT_TO_I14Y }}
         IDS_I14Y: ${{ secrets.IDS_I14Y }}
         ACCESS_TOKEN: ${{ steps.get-token.outputs.access_token }}
-      run: python scripts/unisante/harvester_ABN.py
+      run: python src/harvester_ABN.py
     
     - name: Upload log
       uses: actions/upload-artifact@v4
@@ -74,5 +71,5 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: I14Y_IDS-json
-        path: unisante/data/I14Y_IDS.json
+        path: OGD_BL/data/I14Y_IDS.json
         retention-days: 2

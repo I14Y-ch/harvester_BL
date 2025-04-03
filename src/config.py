@@ -1,30 +1,26 @@
+import json
+import os
+
+# OGD canton Basel-Landschaft API
+API_BL_URL = "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat"
+
 # I14Y API configuration
 API_BASE_URL = "https://api-a.i14y.admin.ch/api/partner/v1"
-API_TOKEN = "Bear"
+API_TOKEN = f"Bearer {os.environ['ACCESS_TOKEN']}" 
+
+IDS_I14Y = json.loads(os.environ['IDS_I14Y'])
 
 # Organization settings
-ORGANIZATION_ID = "CH1"
+ORGANIZATION_ID = "CH_KT_BL"
 DEFAULT_PUBLISHER = {
     "identifier": ORGANIZATION_ID
 }
 
-# File paths
-TEMPLATE_PATH = "api_responses/response_1.xml"
-
 # File format (.xml and .rdf -> "xml", .ttl -> "ttl")
 FILE_FORMAT = "xml"
 
-
-# Configuration from config.py
-API_BASE_URL = API_BASE_URL
-API_TOKEN = API_TOKEN
-ORGANIZATION_ID = ORGANIZATION_ID
-DEFAULT_PUBLISHER = DEFAULT_PUBLISHER
-TEMPLATE_PATH = TEMPLATE_PATH
-FILE_FORMAT = FILE_FORMAT
-
-# Proxy configuration (if needed)
+# Proxies
 PROXIES = {
-    "http": os.environ.get('HTTP_PROXY', ''),
-    "https": os.environ.get('HTTPS_PROXY', '')
+    "http": "http://proxy-bvcol.admin.ch:8080",
+    "https": "http://proxy-bvcol.admin.ch:8080"
 }
