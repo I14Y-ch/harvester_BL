@@ -26,7 +26,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         response = requests.get(
             API_BL_URL,
             params=params,
-            proxies=PROXIES,
+            #proxies=PROXIES,
             verify=False,
             timeout=30
         )
@@ -43,7 +43,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         graph.parse(data=response.text, format='xml')
 
         # Process just the first dataset we find
-        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:30]:
+        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:5]:
             print(f"Processing test dataset URI: {dataset_uri}")
             dataset = extract_dataset(graph, dataset_uri)
             
@@ -278,7 +278,10 @@ def main():
 
         except Exception as e:
             print(f"Error processing dataset {identifier}: {str(e)}\n")
-
+    
+    os.makedirs(os.path.dirname(path_to_data), exist_ok=True)
+    with open(path_to_data, 'w') as f:
+        json.dump({}, f)  
     # Save the updated IDs
     with open(path_to_data, 'w') as f:
         json.dump(previous_ids, f)
