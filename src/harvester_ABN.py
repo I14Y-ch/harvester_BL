@@ -1,21 +1,13 @@
 import requests
 from config import *
 from dcat_properties_utils import *
-from rdflib import Graph, URIRef
-from rdflib.namespace import DCTERMS, FOAF, RDFS, DCAT, RDF, RDFS
-from rdflib import Namespace
+from rdflib import Graph
+from rdflib.namespace import DCAT, RDF
 import json
 import os
 from dateutil import parser
 from typing import Dict, Any, List
-from pathlib import Path
 import datetime
-
-# Namespaces
-ADMS = Namespace("http://www.w3.org/ns/adms#")
-SPDX = Namespace("http://spdx.org/rdf/terms#")
-dcat3 = Namespace("http://www.w3.org/ns/dcat#")
-SCHEMA = Namespace("http://schema.org/")
 
 def fetch_datasets_from_api() -> List[Dict]:
     """Fetches a single test dataset from API for testing purposes"""
@@ -26,7 +18,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         response = requests.get(
             API_BL_URL,
             params=params,
-            #proxies=PROXIES,
+            proxies=PROXIES,
             verify=False,
             timeout=30
         )
@@ -43,7 +35,7 @@ def fetch_datasets_from_api() -> List[Dict]:
         graph.parse(data=response.text, format='xml')
 
         # Process just the first dataset we find
-        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:5]:
+        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:2]:
             print(f"Processing test dataset URI: {dataset_uri}")
             dataset = extract_dataset(graph, dataset_uri)
             
@@ -174,8 +166,7 @@ def submit_to_api(payload, identifier=None, previous_ids=None):
         "Authorization": API_TOKEN,
         "Content-Type": "application/json"
     }
-    
-    # Determine if we're creating or updating
+
     action = "created"
     if identifier and previous_ids and identifier in previous_ids:
         dataset_id = previous_ids[identifier]['id']
@@ -188,8 +179,9 @@ def submit_to_api(payload, identifier=None, previous_ids=None):
     
     if response.status_code not in [200, 201, 204]:
         raise Exception(f"API error: {response.status_code} - {response.text}")
-    
-    return response.json(), action
+
+    return response.text, action
+
 
 def save_data(data: Dict[str, Any], file_path: str) -> None:
     """Saves data to a JSON file."""
@@ -254,23 +246,24 @@ def main():
                 print(f"{action.capitalize()} dataset detected: {identifier}")
 
                 payload = create_dataset_payload(dataset)
-                response, action = submit_to_api(payload, identifier, previous_ids)
+                print(f"[DEBUG] Payload created: {json.dumps(payload, indent=2)[:500]}...") 
+                response_id, action = submit_to_api(payload, identifier, previous_ids)
+                print(f"[DEBUG] API response: {response_id}")
 
                 if action == "created":
                     created_datasets.append(identifier)
-                    previous_ids[identifier] = {'id': response.get('id', '')}
+                    previous_ids[identifier] = {'id': response_id}  # Store the UUID directly
 
                     try:
-                        change_level_i14y(response['id'], 'Public', API_TOKEN)
-                        change_status_i14y(response['id'], 'Registered', API_TOKEN)
+                        change_level_i14y(response_id, 'Public', API_TOKEN)  # Use response_id directly
+                        change_status_i14y(response_id, 'Registered', API_TOKEN)
                         print(f"Set i14y level to Public and status to Registered for {identifier}")
                     except Exception as e:
                         print(f"Error setting i14y level/status for {identifier}: {str(e)}")
-
                 elif action == "updated":
                     updated_datasets.append(identifier)
 
-                print(f"Success - Dataset {action}: {response}\n")
+                print(f"Success - Dataset {action}: {response_id}\n")
 
             else:
                 unchanged_datasets.append(identifier)
@@ -278,11 +271,9 @@ def main():
 
         except Exception as e:
             print(f"Error processing dataset {identifier}: {str(e)}\n")
-    
+            
     os.makedirs(os.path.dirname(path_to_data), exist_ok=True)
-    with open(path_to_data, 'w') as f:
-        json.dump({}, f)  
-    # Save the updated IDs
+  
     with open(path_to_data, 'w') as f:
         json.dump(previous_ids, f)
 

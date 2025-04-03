@@ -10,6 +10,9 @@ from bs4 import BeautifulSoup
 VCARD = Namespace("http://www.w3.org/2006/vcard/ns#")
 SCHEMA = Namespace("http://schema.org/")
 PROV = Namespace("http://www.w3.org/ns/prov#")
+ADMS = Namespace("http://www.w3.org/ns/adms#")
+SPDX = Namespace("http://spdx.org/rdf/terms#")
+dcat3 = Namespace("http://www.w3.org/ns/dcat#")
 
 def extract_dataset(graph, dataset_uri):
     """Extracts dataset details from RDF graph."""
@@ -336,7 +339,7 @@ def get_themes(graph, subject, predicate):
             unique_codes.add(theme_code) 
             themes.append({"code": theme_code})
     if not themes:
-         themes.append({"code": "125"})
+         return []
     return themes
 
 
