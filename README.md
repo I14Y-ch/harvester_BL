@@ -5,8 +5,10 @@
 For each agent:
 
 - .github/workflows/[agent-workflow].yml: GitHub Actions workflow file for the specific organization and purpose
-- scripts/[agent]/harvester.py: Main Python script for data harvesting
-- scripts/[agent]/mapping.py: Python script containing the data mapping function
+- src/harvester_ABN.py: Main Python script for data harvesting
+- src/config.py: configuration file
+- src/dcat_properties_utils.py: python script containing the data extracting and mapping functions
+- src/mapping.py: mapping disctonary to standardize some properties
 
 ## Workflow
 
