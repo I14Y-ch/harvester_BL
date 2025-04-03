@@ -6,7 +6,7 @@ API_BL_URL = "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat"
 
 # I14Y API configuration
 API_BASE_URL = "https://api-a.i14y.admin.ch/api/partner/v1"
-API_TOKEN = f"Bearer {os.environ['ACCESS_TOKEN']}" 
+API_TOKEN = f"{os.environ['ACCESS_TOKEN']}" 
 
 IDS_I14Y = json.loads(os.environ['IDS_I14Y'])
 
