@@ -35,8 +35,7 @@ jobs:
 
     - name: Run harvester script
       env:
-        IDS_I14Y: ${{ secrets.IDS_I14Y }}
-        ACCESS_TOKEN: ""
+        ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN}}
       run: python src/harvester_ABN.py
     
     - name: Upload log
