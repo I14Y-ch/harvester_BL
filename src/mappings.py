@@ -1,30 +1,17 @@
 # i14y Code: (dcat-ap.ch URI, EU data-theme URI)
 THEME_MAPPING = {
-  
-    "101": ("http://dcat-ap.ch/vocabulary/themes/work", "http://publications.europa.eu/resource/authority/data-theme/ECON"),
-    "102": ("http://dcat-ap.ch/vocabulary/themes/construction", "http://publications.europa.eu/resource/authority/data-theme/SOCI"),
-    "103": ("http://dcat-ap.ch/vocabulary/themes/education", "http://publications.europa.eu/resource/authority/data-theme/EDUC"),
-    "105": ("http://dcat-ap.ch/vocabulary/themes/legislation", "http://dcat-ap.ch/vocabulary/themes/crime", "http://publications.europa.eu/resource/authority/data-theme/JUST"),
-    "106": ("http://dcat-ap.ch/vocabulary/themes/population", "http://publications.europa.eu/resource/authority/data-theme/SOCI"),
-    "107": ("http://dcat-ap.ch/vocabulary/themes/politics", "http://publications.europa.eu/resource/authority/data-theme/GOVE"),
-    "108": ("http://dcat-ap.ch/vocabulary/themes/culture", "http://publications.europa.eu/resource/authority/data-theme/EDUC"),
-    "109": ("http://dcat-ap.ch/vocabulary/themes/agriculture", "http://publications.europa.eu/resource/authority/data-theme/AGRI"),
-    "110": ("http://dcat-ap.ch/vocabulary/themes/mobility", "http://publications.europa.eu/resource/authority/data-theme/TRAN"),
-    "111": ("http://dcat-ap.ch/vocabulary/themes/public-order"),
-    "112": ("http://dcat-ap.ch/vocabulary/themes/national-economy", "http://publications.europa.eu/resource/authority/data-theme/ECON"),
-    "113": ("http://dcat-ap.ch/vocabulary/themes/territory", "http://publications.europa.eu/resource/authority/data-theme/ENVI"),
-    "114": ("http://dcat-ap.ch/vocabulary/themes/health", "http://publications.europa.eu/resource/authority/data-theme/HEAL"),
-    "115": ("http://dcat-ap.ch/vocabulary/themes/national-economy", "http://dcat-ap.ch/vocabulary/themes/prices", "http://dcat-ap.ch/vocabulary/themes/finances","http://publications.europa.eu/resource/authority/data-theme/ECON", "http://dcat-ap.ch/vocabulary/themes/trade", "http://dcat-ap.ch/vocabulary/themes/tourism"),
-    "116": ("http://dcat-ap.ch/vocabulary/themes/mobility", "http://publications.europa.eu/resource/authority/data-theme/TRAN"),
-    "117": ("http://dcat-ap.ch/vocabulary/themes/population", "http://publications.europa.eu/resource/authority/data-theme/SOCI"),
-    "118": ("http://dcat-ap.ch/vocabulary/themes/industry", "http://publications.europa.eu/resource/authority/data-theme/ECON"),
-    "119": ("http://dcat-ap.ch/vocabulary/themes/administration", "http://publications.europa.eu/resource/authority/data-theme/GOVE"),
-    "120": ("http://publications.europa.eu/resource/authority/data-theme/REGI"),
-    "122": ("http://dcat-ap.ch/vocabulary/themes/geography", "http://publications.europa.eu/resource/authority/data-theme/REGI"),
-    "123": ("http://dcat-ap.ch/vocabulary/themes/legislation", "http://publications.europa.eu/resource/authority/data-theme/JUST"),
-    "124": ("http://dcat-ap.ch/vocabulary/themes/energy", "http://publications.europa.eu/resource/authority/data-theme/ENER"),
-    "125": ("http://dcat-ap.ch/vocabulary/themes/statistical-basis"),
-    "126": ("http://dcat-ap.ch/vocabulary/themes/social-security", "http://publications.europa.eu/resource/authority/data-theme/SOCI")
+    "103": ("Bildung, Kultur und Sport"),
+    "106": ("Bevölkerung und Gesellschaft"),
+    "108": ( "Bildung, Kultur und Sport"),
+    "113": ( "Umwelt"),
+    "114": ("Gesundheit"),
+    "115": ("Wirtschaft und Finanzen"),
+    "116": ("Verkehr"),
+    "117": ("Bevölkerung und Gesellschaft"),
+    "119": ("Regierung und öffentlicher Sektor"),
+    "120": ("Regionen und Städte"),
+    "122": ("Regionen und Städte"),
+    "124": ( "Energie")
 
 }
 
