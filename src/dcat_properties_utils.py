@@ -6,9 +6,7 @@ from rdflib import Namespace
 import unicodedata
 from mappings import *
 from bs4 import BeautifulSoup
-import warnings
 
-warnings.filterwarnings("ignore", message=".*does not look like a valid URI, trying to serialize this will break.*")
 
 VCARD = Namespace("http://www.w3.org/2006/vcard/ns#")
 SCHEMA = Namespace("http://schema.org/")
