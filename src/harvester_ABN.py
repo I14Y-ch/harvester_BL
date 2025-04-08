@@ -11,7 +11,7 @@ import datetime
 import urllib3
 import warnings
 
-warnings.filterwarnings("ignore", message=".*does not look like a valid URI*.")
+warnings.filterwarnings("ignore", message=".*does not look like a valid URI.*")
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fetch_datasets_from_api() -> List[Dict]:
