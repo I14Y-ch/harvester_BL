@@ -316,30 +316,36 @@ def get_frequency(graph, subject):
 def get_themes(graph, subject, predicate):
     """
     Retrieves a list of unique i14y codes for themes.
-    Handles both literal values (e.g., "101") and URI values (e.g., "http://publications.europa.eu/resource/authority/data-theme/ECON").
+    Handles both literal values (e.g., "101") and SKOS concept values with prefLabels.
     Ensures that the collection does not contain repeated codes.
     """
     unique_codes = set()  
     themes = []
 
     for theme in graph.objects(subject, predicate):
-        theme_str = str(theme) 
+        theme_str = str(theme)
         theme_code = None
+        theme_label = None
 
         if isinstance(theme, Literal):
-            theme_code = theme_str 
+        
+            theme_code = theme_str
+        else:
+    
+            for pref_label in graph.objects(theme, SKOS.prefLabel):
+                theme_label = str(pref_label)
+                break
+            
+            if theme_label:
+                for code, label_tuple in THEME_MAPPING.items():
+                    if theme_label in label_tuple:
+                        theme_code = code
+                        break
 
-        elif isinstance(theme, URIRef):
-      
-            for code, uris in THEME_MAPPING.items():
-                if theme_str in uris:
-                    theme_code = code
-                    break
         if theme_code and theme_code not in unique_codes:
             unique_codes.add(theme_code) 
             themes.append({"code": theme_code})
-    if not themes:
-         return []
+    
     return themes
 
 
