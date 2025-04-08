@@ -8,6 +8,9 @@ import os
 from dateutil import parser
 from typing import Dict, Any, List
 import datetime
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fetch_datasets_from_api() -> List[Dict]:
     """Fetches a single test dataset from API for testing purposes"""
