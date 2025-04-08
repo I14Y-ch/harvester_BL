@@ -268,14 +268,6 @@ def get_access_services(graph, subject):
     return [{"id": str(obj)} for obj in graph.objects(subject, DCAT.accessService)]
 
 
-def get_conforms_to(graph, subject):
-    """Retrieves conformsTo from RDF graph."""
-    return [{
-        "label": get_multilingual_literal(graph, obj, DCTERMS.title),
-        "uri": str(obj)
-    } for obj in graph.objects(subject, DCTERMS.conformsTo)]
-
-
 def get_coverage(graph, subject):
     """Retrieves coverage from RDF graph."""
     coverage = []
@@ -297,10 +289,6 @@ def get_spatial(graph, dataset_uri):
     """
     spatial_values = []
     for spatial in graph.objects(dataset_uri, DCTERMS.spatial):
-     
-        if isinstance(spatial, URIRef):
-            spatial_str = str(spatial).split("/")[-1]  
-        else:
             spatial_str = str(spatial)
         spatial_values.append(spatial_str)
     
