@@ -1,4 +1,5 @@
 import requests
+import time
 from config import *
 from dcat_properties_utils import *
 from rdflib import Graph
