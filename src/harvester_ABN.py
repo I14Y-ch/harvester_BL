@@ -10,10 +10,8 @@ from typing import Dict, Any, List
 import datetime
 import urllib3
 import warnings
-from rdflib import __name__ as rdflib_name
 
-# Ignore all UserWarnings from rdflib
-warnings.filterwarnings("ignore", category=UserWarning, module=rdflib_name)
+warnings.filterwarnings("ignore", category=UserWarning)
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fetch_datasets_from_api() -> List[Dict]:
