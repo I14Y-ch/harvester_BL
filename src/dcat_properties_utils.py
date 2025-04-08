@@ -292,10 +292,15 @@ def get_spatial(graph, dataset_uri):
     """
     spatial_values = []
     for spatial in graph.objects(dataset_uri, DCTERMS.spatial):
-        spatial_str = str(spatial)
-        spatial_values.append(spatial_str)
-    
-    return spatial_values if spatial_values else []
+             spatial_str = str(spatial)
+         spatial_values.append(spatial_str)
+          if isinstance(spatial, URIRef):
+              spatial_str = str(spatial).split("/")[-1]  
+          else:
+              spatial_str = str(spatial)
+          spatial_values.append(spatial_str)
+ 
+     return spatial_values if spatial_values else []
 
 
 def get_frequency(graph, subject):
