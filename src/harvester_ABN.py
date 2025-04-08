@@ -11,12 +11,7 @@ import datetime
 import urllib3
 import logging
 
-class URIFilter(logging.Filter):
-    def filter(self, record):
-        return "does not look like a valid URI" not in record.getMessage()
-
-logger = logging.getLogger("rdflib")
-logger.addFilter(URIFilter())  # Filters out only URI warnings
+logging.getLogger("rdflib").setLevel(logging.ERROR)  
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
