@@ -149,9 +149,7 @@ def change_status_i14y(id, status, token):
         params={'status': status}, 
         headers={
             'Authorization': token, 
-            'Content-Type': 'application/json', 
-            'Accept': '*/*',
-            'Accept-encoding': 'json'
+            'Accept': '*/*'
         }, 
         verify=False, 
         #proxies=PROXIES
@@ -255,8 +253,8 @@ def main():
                     previous_ids[identifier] = {'id': response_id} 
 
                     try:
-                        change_level_i14y(response_id, 'Public', API_TOKEN)  
                         change_status_i14y(response_id, 'Recorded', API_TOKEN)
+                        change_level_i14y(response_id, 'Public', API_TOKEN)  
                         print(f"Set i14y level to Public and status to Registered for {identifier}")
                     except Exception as e:
                         print(f"Error setting i14y level/status for {identifier}: {str(e)}")
