@@ -97,6 +97,7 @@ def extract_distributions(graph, dataset_uri):
         availability_uri = get_single_resource(graph, distribution_uri, URIRef("http://data.europa.eu/r5r/availability"))
         license_uri = get_single_resource(graph, distribution_uri, DCTERMS.license)
         license_code = license_uri.split("/")[-1] if license_uri else None
+        valid_license = license_code if license_code in VALID_LICENSE_CODES else None
         checksum_algorithm = get_literal(graph, distribution_uri, SPDX.checksumAlgorithm)
         checksum_value = get_literal(graph, distribution_uri, SPDX.checksumValue)
         packaging_format = get_literal(graph, distribution_uri, DCAT.packageFormat)
@@ -114,7 +115,7 @@ def extract_distributions(graph, dataset_uri):
                 "label": download_title,  
                 "uri": common_url 
             } if common_url else None,
-            "license": {"code": license_code} if license_code else None,  
+            "license": {"code": valid_license} if valid_license else None,  
             "availability": {"code": get_availability_code(availability_uri)} if get_availability_code(availability_uri) else None,  
             "issued": get_literal(graph, distribution_uri, DCTERMS.issued, is_date=True),
             "modified": get_literal(graph, distribution_uri, DCTERMS.modified, is_date=True),
