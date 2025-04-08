@@ -254,6 +254,7 @@ def main():
 
                     try:
                         change_status_i14y(response_id, 'Recorded', API_TOKEN)
+                        time.sleep(0.5)
                         change_level_i14y(response_id, 'Public', API_TOKEN)  
                         print(f"Set i14y level to Public and status to Registered for {identifier}")
                     except Exception as e:
