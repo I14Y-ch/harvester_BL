@@ -1,7 +1,7 @@
 from datetime import datetime 
 from config import *
 from rdflib import URIRef, Literal
-from rdflib.namespace import DCTERMS, FOAF, RDFS, DCAT, RDF
+from rdflib.namespace import DCTERMS, FOAF, RDFS, DCAT, RDF, SKOS
 from rdflib import Namespace
 import unicodedata
 from mappings import *
