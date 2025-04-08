@@ -82,3 +82,5 @@ LANGUAGES_MAPPING = {
     "it": ("it", "IT","http://publications.europa.eu/resource/authority/language/ITA", "http://id.loc.gov/vocabulary/iso639-1/it" ),
     "en": ("en", "EN", "http://publications.europa.eu/resource/authority/language/ENG", "http://id.loc.gov/vocabulary/iso639-1/en" )
 }
+
+VALID_LICENSE_CODES= {"terms_open", "terms_by", "terms_by_ask", "terms_ask"}
