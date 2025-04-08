@@ -9,7 +9,9 @@ from dateutil import parser
 from typing import Dict, Any, List
 import datetime
 import urllib3
+import warnings
 
+warnings.filterwarnings("ignore", message=".*does not look like a valid URI, trying to serialize this will break.*")
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fetch_datasets_from_api() -> List[Dict]:
@@ -142,7 +144,7 @@ def change_level_i14y(id, level, token):
         #proxies=PROXIES
     )
     response.raise_for_status()
-    return response.json()
+    return response
 
 
 def change_status_i14y(id, status, token):
@@ -158,7 +160,7 @@ def change_status_i14y(id, status, token):
         #proxies=PROXIES
     )
     response.raise_for_status()
-    return response.json()
+    return response
 
 
 def submit_to_api(payload, identifier=None, previous_ids=None):
