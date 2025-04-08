@@ -250,9 +250,7 @@ def main():
                 print(f"{action.capitalize()} dataset detected: {identifier}")
 
                 payload = create_dataset_payload(dataset)
-                print(f"[DEBUG] Payload created: {json.dumps(payload, indent=2)[:500]}...") 
                 response_id, action = submit_to_api(payload, identifier, previous_ids)
-                print(f"[DEBUG] API response: {response_id}")
                 response_id = response_id.strip('"')
 
                 if action == "created":
