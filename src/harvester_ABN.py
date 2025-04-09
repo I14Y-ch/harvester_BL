@@ -16,95 +16,103 @@ logging.getLogger("rdflib").setLevel(logging.ERROR)
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-def fetch_datasets_from_api() -> List[Dict]:
-    """Fetches a single test dataset from API for testing purposes"""
+
+
+def fetch_all_datasets_from_api() -> List[Dict]:
+    """Fetches all available datasets from API (approximately 150)"""
     datasets = []
+    skip = 0
+    limit = 100 
+    total_processed = 0
+    
     try:
-        params = {"skip": 0, "limit": 100}
-        response = requests.get(
-            API_BL_URL,
-            params=params,
-            #proxies=PROXIES,
-            verify=False,
-            timeout=30
-        )
-        
-        if response.status_code != 200:
-            print(f"Error: Received status code {response.status_code}")
-            return datasets
+        while True:
+            params = {"skip": skip, "limit": limit}
+            response = requests.get(
+                API_BL_URL,
+                params=params,
+                #proxies=PROXIES,
+                verify=False,
+                timeout=30
+            )
             
-        if not response.text.strip():
-            print("Received empty response")
-            return datasets
-
-        graph = Graph()
-        graph.parse(data=response.text, format='xml')
-
-        for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:3]:
-            print(f"Processing test dataset URI: {dataset_uri}")
-            dataset = extract_dataset(graph, dataset_uri)
-            
-            if dataset and isinstance(dataset, dict):
-                datasets.append(dataset)
-                print("Successfully processed 1 test dataset")
-            else:
-                print(f"Skipping invalid test dataset: {dataset_uri}")
+            if response.status_code != 200:
+                print(f"Error: Received status code {response.status_code}")
+                break
                 
+            if not response.text.strip():
+                print("Received empty response")
+                break
+
+            graph = Graph()
+            graph.parse(data=response.text, format='xml')
+            
+
+            dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
+            if not dataset_uris:
+                break 
+                
+            for dataset_uri in dataset_uris:
+                print(f"Processing dataset URI: {dataset_uri}")
+                dataset = extract_dataset(graph, dataset_uri)
+                
+                if dataset and isinstance(dataset, dict):
+                    datasets.append(dataset)
+                    total_processed += 1
+                else:
+                    print(f"Skipping invalid dataset: {dataset_uri}")
+            
+
+            if len(dataset_uris) < limit:
+                break
+                
+           
+            skip += limit
+            
     except Exception as e:
-        print(f"Error during test request: {e}")
+        print(f"Error during request: {e}")
     
+    print(f"Successfully processed {total_processed} datasets in total")
     return datasets
-
 # def fetch_datasets_from_api() -> List[Dict]:
-#     """Fetches datasets directly from API and processes them."""
+#     """Fetches a single test dataset from API for testing purposes"""
 #     datasets = []
-#     skip = 0
-#     limit = 100
-    
-#     while True:
-#         try:
-#             params = {"skip": skip, "limit": limit}
-#             response = requests.get(
-#                 "https://dam-api.bfs.admin.ch/hub/api/ogd/harvest",
-#                 params=params,
-#                 #proxies=PROXIES,
-#                 verify=False,
-#                 timeout=30
-#             )
+#     try:
+#         params = {"skip": 0, "limit": 100}
+#         response = requests.get(
+#             API_BL_URL,
+#             params=params,
+#             #proxies=PROXIES,
+#             verify=False,
+#             timeout=30
+#         )
+        
+#         if response.status_code != 200:
+#             print(f"Error: Received status code {response.status_code}")
+#             return datasets
             
-#             if response.status_code != 200:
-#                 print(f"Error: Received status code {response.status_code}")
-#                 break
-                
-#             if not response.text.strip():
-#                 print("Received empty response - stopping")
-#                 break
+#         if not response.text.strip():
+#             print("Received empty response")
+#             return datasets
 
-#             graph = Graph()
-#             graph.parse(data=response.text, format='xml')
+#         graph = Graph()
+#         graph.parse(data=response.text, format='xml')
 
-#             for dataset_uri in graph.subjects(RDF.type, DCAT.Dataset):
-#                 print(f"Processing dataset URI: {dataset_uri}")
-#                 dataset = extract_dataset(graph, dataset_uri)
+#         for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:3]:
+#             print(f"Processing test dataset URI: {dataset_uri}")
+#             dataset = extract_dataset(graph, dataset_uri)
+            
+#             if dataset and isinstance(dataset, dict):
+#                 datasets.append(dataset)
+#                 print("Successfully processed 1 test dataset")
+#             else:
+#                 print(f"Skipping invalid test dataset: {dataset_uri}")
                 
-#                 if dataset and isinstance(dataset, dict):
-#                     datasets.append(dataset)
-#                 else:
-#                     print(f"Skipping invalid dataset: {dataset_uri}")
-#             skip += limit
-
-#             if len(graph) < limit:
-#                 break
-                
-#         except requests.exceptions.RequestException as e:
-#             print(f"Request failed: {e}")
-#             break
-#         except Exception as e:
-#             print(f"Error processing response: {e}")
-#             break
+#     except Exception as e:
+#         print(f"Error during test request: {e}")
     
-#     print(f"Total valid datasets found: {len(datasets)}")
 #     return datasets
+
 
 def parse_rdf_file(file_path):
     """Parses an RDF file and extracts datasets with valid distributions."""
