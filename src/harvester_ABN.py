@@ -18,7 +18,7 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 
-def fetch_all_datasets_from_api() -> List[Dict]:
+def fetch_datasets_from_api() -> List[Dict]:
     """Fetches all available datasets from API (approximately 150)"""
     datasets = []
     skip = 0
