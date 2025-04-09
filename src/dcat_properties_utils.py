@@ -321,27 +321,24 @@ def get_themes(graph, subject, predicate):
 
     for theme in graph.objects(subject, predicate):
         theme_str = str(theme)
-        theme_code = None
-        theme_label = None
+        theme_codes = set()  
 
         if isinstance(theme, Literal):
-        
-            theme_code = theme_str
+            theme_codes.add(theme_str)
         else:
-    
             for pref_label in graph.objects(theme, SKOS.prefLabel):
                 theme_label = str(pref_label)
-                break
-            
-            if theme_label:
+         
                 for code, label_tuple in THEME_MAPPING.items():
                     if theme_label in label_tuple:
-                        theme_code = code
-                        break
+                        theme_codes.add(code)
+                break 
 
-        if theme_code and theme_code not in unique_codes:
-            unique_codes.add(theme_code) 
-            themes.append({"code": theme_code})
+  
+        for code in theme_codes:
+            if code not in unique_codes:
+                unique_codes.add(code)
+                themes.append({"code": code})
     
     return themes
 
