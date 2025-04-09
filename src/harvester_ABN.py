@@ -19,60 +19,47 @@ urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 def fetch_datasets_from_api() -> List[Dict]:
-    """Fetches all available datasets from API (approximately 150)"""
+    """Fetches all available datasets from the DCAT API in a single request"""
     datasets = []
-    skip = 0
-    limit = 100 
-    total_processed = 0
     
     try:
-        while True:
-            params = {"skip": skip, "limit": limit}
-            response = requests.get(
-                API_BL_URL,
-                params=params,
-                #proxies=PROXIES,
-                verify=False,
-                timeout=30
-            )
+        response = requests.get(
+            "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat",
+            verify=False,
+            timeout=60  # Generous timeout for potentially large response
+        )
+        
+        if response.status_code != 200:
+            print(f"Error: Received status code {response.status_code}")
+            return datasets
             
-            if response.status_code != 200:
-                print(f"Error: Received status code {response.status_code}")
-                break
-                
-            if not response.text.strip():
-                print("Received empty response")
-                break
+        if not response.text.strip():
+            print("Received empty response")
+            return datasets
 
-            graph = Graph()
-            graph.parse(data=response.text, format='xml')
+        graph = Graph()
+        graph.parse(data=response.text, format='xml')
+        
+        # Get all dataset URIs
+        dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
+        print(f"Found {len(dataset_uris)} datasets to process")
+        
+        # Process each dataset
+        for dataset_uri in dataset_uris:
+            print(f"Processing dataset URI: {dataset_uri}")
+            dataset = extract_dataset(graph, dataset_uri)
             
-
-            dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
-            if not dataset_uris:
-                break 
+            if dataset and isinstance(dataset, dict):
+                datasets.append(dataset)
+            else:
+                print(f"Skipping invalid dataset: {dataset_uri}")
                 
-            for dataset_uri in dataset_uris:
-                print(f"Processing dataset URI: {dataset_uri}")
-                dataset = extract_dataset(graph, dataset_uri)
-                
-                if dataset and isinstance(dataset, dict):
-                    datasets.append(dataset)
-                    total_processed += 1
-                else:
-                    print(f"Skipping invalid dataset: {dataset_uri}")
-            
-
-            if len(dataset_uris) < limit:
-                break
-                
-           
-            skip += limit
-            
+    except requests.exceptions.RequestException as e:
+        print(f"Network error during request: {e}")
     except Exception as e:
-        print(f"Error during request: {e}")
+        print(f"Error processing datasets: {e}")
     
-    print(f"Successfully processed {total_processed} datasets in total")
+    print(f"Successfully processed {len(datasets)} datasets")
     return datasets
 # def fetch_datasets_from_api() -> List[Dict]:
 #     """Fetches a single test dataset from API for testing purposes"""
