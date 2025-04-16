@@ -250,9 +250,15 @@ def get_multilingual_keywords(graph, subject, predicate):
     keywords = []
     
     for keyword_obj in graph.objects(subject, predicate):
+        if keyword_obj is None:
+            continue
+            
         lang = getattr(keyword_obj, 'language', None)
         if lang:  
-            keywords.append({lang: str(keyword_obj)})
+            keywords.append({
+                "cultureCode": lang,
+                "text": str(keyword_obj)
+            })
     
     return keywords
 
