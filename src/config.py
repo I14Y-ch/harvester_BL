@@ -15,6 +15,14 @@ DEFAULT_PUBLISHER = {
     "identifier": ORGANIZATION_ID
 }
 
+# Constants
+SUPPORTED_LANGUAGES = ["de", "en", "fr", "it", "rm"]
+DEFAULT_TITLE = {'de': 'Datenexport'}
+DEFAULT_DESCRIPTION = {'de': 'Export der Daten'}
+EXCLUDED_MEDIA_TYPES = ['application/pdf']
+EXCLUDED_FORMAT_CODES = ['PDF']
+
+
 # File format (.xml and .rdf -> "xml", .ttl -> "ttl")
 FILE_FORMAT = "xml"
 
