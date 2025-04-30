@@ -205,7 +205,7 @@ def get_multilingual_keywords(graph: Graph, subject: URIRef, predicate: URIRef) 
         if keyword_obj is not None and (lang := getattr(keyword_obj, 'language', None))
     ]
 
-# ... 
+
 def get_media_type(media_type_uri: Optional[str]) -> Optional[str]:
     """Returns the media type code if it's a valid URI or direct code."""
     if media_type_uri is None:
@@ -224,10 +224,11 @@ def get_access_services(graph: Graph, subject: URIRef) -> List[Dict]:
 def get_coverage(graph: Graph, subject: URIRef) -> List[Dict]:
     """Retrieves coverage from RDF graph."""
     return [
-        {"start": start, "end": end}
+        {"start": get_literal(graph, obj, DCTERMS.start), 
+         "end": get_literal(graph, obj, DCTERMS.end)}
         for obj in graph.objects(subject, DCTERMS.coverage)
-        if (start := get_literal(graph, obj, DCTERMS.start)) is not None or 
-           (end := get_literal(graph, obj, DCTERMS.end)) is not None
+        if get_literal(graph, obj, DCTERMS.start) is not None or 
+           get_literal(graph, obj, DCTERMS.end) is not None
     ]
 
 def get_spatial(graph: Graph, dataset_uri: URIRef) -> List[str]:
@@ -281,11 +282,13 @@ def get_availability_code(availability_uri: Optional[str]) -> Optional[str]:
 def get_temporal_coverage(graph: Graph, subject: URIRef) -> List[Dict]:
     """Retrieves temporal coverage data from RDF graph."""
     return [
-        {"start": start, "end": end}
+        {"start": get_literal(graph, obj, DCAT.startDate, is_date=True), 
+         "end": get_literal(graph, obj, DCAT.endDate, is_date=True)}
         for obj in graph.objects(subject, DCTERMS.temporal)
-        if (obj, RDF.type, URIRef("http://purl.org/dc/terms/PeriodOfTime")) in graph and
-           (start := get_literal(graph, obj, DCAT.startDate, is_date=True)) is not None or
-           (end := get_literal(graph, obj, DCAT.endDate, is_date=True)) is not None
+        if (obj, RDF.type, URIRef("http://purl.org/dc/terms/PeriodOfTime")) in graph and (
+            get_literal(graph, obj, DCAT.startDate, is_date=True) is not None or
+            get_literal(graph, obj, DCAT.endDate, is_date=True) is not None
+        )
     ]
 
 def get_is_referenced_by(graph: Graph, subject: URIRef) -> List[Dict]:
