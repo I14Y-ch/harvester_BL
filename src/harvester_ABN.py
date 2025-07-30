@@ -149,19 +149,25 @@ def submit_to_api(payload, identifier=None, previous_ids=None):
     }
 
     action = "created"
-    if identifier and previous_ids and identifier in previous_ids:
-        dataset_id = previous_ids[identifier]['id']
-        url = f"{API_BASE_URL}/datasets/{dataset_id}"
-        response = requests.put(url, json=payload, headers=headers, verify=False)
-        action = "updated"
-    else:
-        url = f"{API_BASE_URL}/datasets"
-        response = requests.post(url, json=payload, headers=headers, verify=False)
-    
-    if response.status_code not in [200, 201, 204]:
-        raise Exception(f"API error: {response.status_code} - {response.text}")
+    try:
+        if identifier and previous_ids and identifier in previous_ids:
+            dataset_id = previous_ids[identifier]['id']
+            url = f"{API_BASE_URL}/datasets/{dataset_id}"
+            print(f"\n[DEBUG] UPDATE PAYLOAD FOR {identifier}:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")  # Debug print
+            response = requests.put(url, json=payload, headers=headers, verify=False)
+            action = "updated"
+        else:
+            url = f"{API_BASE_URL}/datasets"
+            print(f"\n[DEBUG] CREATE PAYLOAD FOR {identifier}:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")  # Debug print
+            response = requests.post(url, json=payload, headers=headers, verify=False)
+        
+        if response.status_code not in [200, 201, 204]:
+            error_msg = f"API error: {response.status_code} - {response.text}"
+            print(f"[DEBUG] FAILED RESPONSE: {error_msg}")
+            raise Exception(error_msg)
 
-    return response.text, action
+        return response.text, action
+  
 
 
 def save_data(data: Dict[str, Any], file_path: str) -> None:
