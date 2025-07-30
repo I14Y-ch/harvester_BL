@@ -221,15 +221,29 @@ def get_access_services(graph: Graph, subject: URIRef) -> List[Dict]:
         for obj in graph.objects(subject, DCAT.accessService)
     ]
 
+
 def get_coverage(graph: Graph, subject: URIRef) -> List[Dict]:
-    """Retrieves coverage from RDF graph."""
-    return [
-        {"start": get_literal(graph, obj, DCTERMS.start), 
-         "end": get_literal(graph, obj, DCTERMS.end)}
-        for obj in graph.objects(subject, DCTERMS.coverage)
-        if get_literal(graph, obj, DCTERMS.start) is not None or 
-           get_literal(graph, obj, DCTERMS.end) is not None
-    ]
+    """Retrieves temporal coverage from RDF graph, only accepting PeriodOfTime objects.
+    Skips rdf:resource and other non-PeriodOfTime coverage declarations."""
+    coverage_data = []
+    
+    for coverage_node in graph.objects(subject, DCTERMS.coverage):
+        # Skip if it's an rdf:resource (URI reference)
+        if isinstance(coverage_node, URIRef):
+            continue
+            
+        # Check if this is a PeriodOfTime object
+        if (coverage_node, RDF.type, DCTERMS.PeriodOfTime) in graph:
+            start = get_literal(graph, coverage_node, DCTERMS.start) or get_literal(graph, coverage_node, DCAT.startDate)
+            end = get_literal(graph, coverage_node, DCTERMS.end) or get_literal(graph, coverage_node, DCAT.endDate)
+            
+            if start is not None or end is not None:
+                coverage_data.append({
+                    "start": start,
+                    "end": end
+                })
+    
+    return coverage_data
 
 def get_spatial(graph: Graph, dataset_uri: URIRef) -> List[str]:
     """Retrieves spatial values as a list of strings."""
