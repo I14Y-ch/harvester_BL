@@ -165,9 +165,10 @@ def submit_to_api(payload, identifier=None, previous_ids=None):
             print(f"[DEBUG] FAILED RESPONSE: {error_msg}")
             raise Exception(error_msg)
 
-    return response.text, action
-  
-
+        return response.text, action  # This is now properly indented inside the try block
+    except Exception as e:
+        print(f"[DEBUG] FULL PAYLOAD THAT FAILED:\n{json.dumps(payload, indent=2, ensure_ascii=False)}")
+        raise e
 
 def save_data(data: Dict[str, Any], file_path: str) -> None:
     """Saves data to a JSON file."""
