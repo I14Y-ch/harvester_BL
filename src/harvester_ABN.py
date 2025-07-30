@@ -140,7 +140,6 @@ def change_status_i14y(id, status, token):
     response.raise_for_status()
     return response
 
-
 def submit_to_api(payload, identifier=None, previous_ids=None):
     """Submits the dataset payload to the API."""
     headers = {
@@ -166,7 +165,7 @@ def submit_to_api(payload, identifier=None, previous_ids=None):
             print(f"[DEBUG] FAILED RESPONSE: {error_msg}")
             raise Exception(error_msg)
 
-        return response.text, action
+    return response.text, action
   
 
 
