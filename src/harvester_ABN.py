@@ -61,45 +61,6 @@ def fetch_datasets_from_api() -> List[Dict]:
     
     print(f"Successfully processed {len(datasets)} datasets")
     return datasets
-# def fetch_datasets_from_api() -> List[Dict]:
-#     """Fetches a single test dataset from API for testing purposes"""
-#     datasets = []
-#     try:
-#         params = {"skip": 0, "limit": 100}
-#         response = requests.get(
-#             API_BL_URL,
-#             params=params,
-#             #proxies=PROXIES,
-#             verify=False,
-#             timeout=30
-#         )
-        
-#         if response.status_code != 200:
-#             print(f"Error: Received status code {response.status_code}")
-#             return datasets
-            
-#         if not response.text.strip():
-#             print("Received empty response")
-#             return datasets
-
-#         graph = Graph()
-#         graph.parse(data=response.text, format='xml')
-
-#         for dataset_uri in list(graph.subjects(RDF.type, DCAT.Dataset))[:3]:
-#             print(f"Processing test dataset URI: {dataset_uri}")
-#             dataset = extract_dataset(graph, dataset_uri)
-            
-#             if dataset and isinstance(dataset, dict):
-#                 datasets.append(dataset)
-#                 print("Successfully processed 1 test dataset")
-#             else:
-#                 print(f"Skipping invalid test dataset: {dataset_uri}")
-                
-#     except Exception as e:
-#         print(f"Error during test request: {e}")
-    
-#     return datasets
-
 
 def parse_rdf_file(file_path):
     """Parses an RDF file and extracts datasets with valid distributions."""
@@ -226,38 +187,8 @@ def main():
     datasets = fetch_datasets_from_api()
     
     print("\nStarting dataset import...\n")
-    
-#        Code to do a manual update of all datasets
-    # for dataset in datasets:
-    #     identifier = dataset['identifiers'][0]
-    #     print(f"\nProcessing dataset: {identifier}")
-    
-    #     try:
-    #         payload = create_dataset_payload(dataset)
-            
-    #         # Check if we know this dataset
-    #         if identifier in previous_ids:
-    #             # Force update existing dataset
-    #             response_id, action = submit_to_api(payload, identifier, previous_ids)
-    #             updated_datasets.append(identifier)
-    #         else:
-    #             # Create new dataset
-    #             response_id, action = submit_to_api(payload)
-    #             created_datasets.append(identifier)
-    #             previous_ids[identifier] = {'id': response_id.strip('"')}
-                
-    #             # Set initial status for new datasets
-    #             try:
-    #                 change_level_i14y(response_id, 'Public', API_TOKEN)  
-    #                 time.sleep(0.5)
-    #                 change_status_i14y(response_id, 'Recorded', API_TOKEN)
-    #             except Exception as e:
-    #                 print(f"Error setting initial status: {str(e)}")
-                    
-    #         print(f"Success - Dataset {action}: {response_id}\n")
-            
-    #     except Exception as e:
-    #         print(f"Error processing dataset {identifier}: {str(e)}\n") 
+
+    current_source_identifiers = {dataset['identifiers'][0] for dataset in datasets}
             
     for dataset in datasets:
         identifier = dataset['identifiers'][0]
