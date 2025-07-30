@@ -1,7 +1,6 @@
 import requests
-import time
 from config import *
-from dcat_properties_importer import *
+from dcat_properties_utils import *
 from rdflib import Graph
 from rdflib.namespace import DCAT, RDF
 import json
@@ -9,58 +8,64 @@ import os
 from dateutil import parser
 from typing import Dict, Any, List
 import datetime
+import time
 import urllib3
-import logging
-
-logging.getLogger("rdflib").setLevel(logging.ERROR)  
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-
-
 def fetch_datasets_from_api() -> List[Dict]:
-    """Fetches all available datasets from the DCAT API in a single request"""
-    datasets = []
+    """Fetches all datasets from API"""
+    all_datasets = []
+    skip = 0
+    limit = 100 
+    has_more = True
     
-    try:
-        response = requests.get(
-            "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat",
-            verify=False,
-            timeout=60  # Generous timeout for potentially large response
-        )
-        
-        if response.status_code != 200:
-            print(f"Error: Received status code {response.status_code}")
-            return datasets
+    while has_more:
+        try:
+            params = {"skip": skip, "limit": limit}
+            response = requests.get(
+                API_BL_URL,
+                params=params,
+                #proxies=PROXIES,
+                verify=False,
+                timeout=30
+            )
             
-        if not response.text.strip():
-            print("Received empty response")
-            return datasets
-
-        graph = Graph()
-        graph.parse(data=response.text, format='xml')
-        
-        # Get all dataset URIs
-        dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
-        print(f"Found {len(dataset_uris)} datasets to process")
-        
-        # Process each dataset
-        for dataset_uri in dataset_uris:
-            print(f"Processing dataset URI: {dataset_uri}")
-            dataset = extract_dataset(graph, dataset_uri)
-            
-            if dataset and isinstance(dataset, dict):
-                datasets.append(dataset)
-            else:
-                print(f"Skipping invalid dataset: {dataset_uri}")
+            if response.status_code != 200:
+                print(f"Error: Received status code {response.status_code}")
+                break
                 
-    except requests.exceptions.RequestException as e:
-        print(f"Network error during request: {e}")
-    except Exception as e:
-        print(f"Error processing datasets: {e}")
+            if not response.text.strip():
+                print("Received empty response")
+                break
+
+            graph = Graph()
+            graph.parse(data=response.text, format='xml')
+            
+            dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
+            if not dataset_uris:
+                has_more = False
+                break
+                
+            for dataset_uri in dataset_uris:
+                print(f"Processing dataset URI: {dataset_uri}")
+                dataset = extract_dataset(graph, dataset_uri)
+                
+                if dataset and isinstance(dataset, dict):
+                    all_datasets.append(dataset)
+                else:
+                    print(f"Skipping invalid dataset: {dataset_uri}")
+            
+            print(f"Processed {len(dataset_uris)} datasets in this batch")
+            skip += limit
+            
+        except Exception as e:
+            print(f"Error during API request: {e}")
+            break
     
-    print(f"Successfully processed {len(datasets)} datasets")
-    return datasets
+    print(f"Total datasets retrieved: {len(all_datasets)}")
+    return all_datasets
+    
 
 def parse_rdf_file(file_path):
     """Parses an RDF file and extracts datasets with valid distributions."""
@@ -112,7 +117,9 @@ def change_status_i14y(id, status, token):
         params={'status': status}, 
         headers={
             'Authorization': token, 
-            'Accept': '*/*'
+            'Content-Type': 'application/json', 
+            'Accept': '*/*',
+            'Accept-encoding': 'json'
         }, 
         verify=False, 
         #proxies=PROXIES
@@ -187,9 +194,9 @@ def main():
     datasets = fetch_datasets_from_api()
     
     print("\nStarting dataset import...\n")
-
+    
     current_source_identifiers = {dataset['identifiers'][0] for dataset in datasets}
-            
+    
     for dataset in datasets:
         identifier = dataset['identifiers'][0]
         print(f"\nProcessing dataset: {identifier}")
@@ -216,9 +223,9 @@ def main():
                     previous_ids[identifier] = {'id': response_id} 
 
                     try:
-                        change_status_i14y(response_id, 'Recorded', API_TOKEN)
-                        time.sleep(0.5)
                         change_level_i14y(response_id, 'Public', API_TOKEN)  
+                        time.sleep(0.5)
+                        change_status_i14y(response_id, 'Recorded', API_TOKEN)
                         print(f"Set i14y level to Public and status to Registered for {identifier}")
                     except Exception as e:
                         print(f"Error setting i14y level/status for {identifier}: {str(e)}")
@@ -233,7 +240,8 @@ def main():
 
         except Exception as e:
             print(f"Error processing dataset {identifier}: {str(e)}\n")
-    # Find datasets that exist in previous_ids but not in current source
+
+        # Find datasets that exist in previous_ids but not in current source
     datasets_to_delete = set(previous_ids.keys()) - current_source_identifiers
     
     deleted_datasets = []
@@ -299,6 +307,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
- 
