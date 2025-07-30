@@ -76,11 +76,26 @@ def parse_rdf_file(file_path):
     return datasets
 
 
-def create_dataset_payload(dataset):
-    """Creates the JSON payload for the dataset submission."""
+def create_dataset_payload(dataset: Dict, is_update: bool = False) -> Dict:
+    """Creates the JSON payload for dataset submission, handling update requirements."""
     if not isinstance(dataset, dict):
         raise ValueError("Dataset must be a dictionary.")
-    return {"data": dataset}
+    
+    payload = {
+        "data": dataset
+    }
+
+    if is_update:
+        payload["updateModel"] = {
+            "updateAllFields": True 
+        }
+    
+        if "publisher" not in dataset:
+            dataset["publisher"] = {
+                "identifier": ORGANIZATION_ID 
+            }
+    
+    return payload
 
 
 def change_level_i14y(id, level, token):
@@ -205,7 +220,7 @@ def main():
                 action = "created" if is_new_dataset else "updated"
                 print(f"{action.capitalize()} dataset detected: {identifier}")
 
-                payload = create_dataset_payload(dataset)
+                payload = create_dataset_payload(dataset, is_update=(not is_new_dataset))
                 response_id, action = submit_to_api(payload, identifier, previous_ids)
                 response_id = response_id.strip('"')
 
