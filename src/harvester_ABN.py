@@ -14,57 +14,48 @@ import urllib3
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 def fetch_datasets_from_api() -> List[Dict]:
-    """Fetches all datasets from API"""
-    all_datasets = []
-    skip = 0
-    limit = 100 
-    has_more = True
+    """Fetches all available datasets from the DCAT API in a single request"""
+    datasets = []
     
-    while has_more:
-        try:
-            params = {"skip": skip, "limit": limit}
-            response = requests.get(
-                API_BL_URL,
-                params=params,
-                #proxies=PROXIES,
-                verify=False,
-                timeout=30
-            )
+    try:
+        response = requests.get(
+            "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat",
+            verify=False,
+            timeout=60  # Generous timeout for potentially large response
+        )
+        
+        if response.status_code != 200:
+            print(f"Error: Received status code {response.status_code}")
+            return datasets
             
-            if response.status_code != 200:
-                print(f"Error: Received status code {response.status_code}")
-                break
-                
-            if not response.text.strip():
-                print("Received empty response")
-                break
+        if not response.text.strip():
+            print("Received empty response")
+            return datasets
 
-            graph = Graph()
-            graph.parse(data=response.text, format='xml')
+        graph = Graph()
+        graph.parse(data=response.text, format='xml')
+        
+        # Get all dataset URIs
+        dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
+        print(f"Found {len(dataset_uris)} datasets to process")
+        
+        # Process each dataset
+        for dataset_uri in dataset_uris:
+            print(f"Processing dataset URI: {dataset_uri}")
+            dataset = extract_dataset(graph, dataset_uri)
             
-            dataset_uris = list(graph.subjects(RDF.type, DCAT.Dataset))
-            if not dataset_uris:
-                has_more = False
-                break
+            if dataset and isinstance(dataset, dict):
+                datasets.append(dataset)
+            else:
+                print(f"Skipping invalid dataset: {dataset_uri}")
                 
-            for dataset_uri in dataset_uris:
-                print(f"Processing dataset URI: {dataset_uri}")
-                dataset = extract_dataset(graph, dataset_uri)
-                
-                if dataset and isinstance(dataset, dict):
-                    all_datasets.append(dataset)
-                else:
-                    print(f"Skipping invalid dataset: {dataset_uri}")
-            
-            print(f"Processed {len(dataset_uris)} datasets in this batch")
-            skip += limit
-            
-        except Exception as e:
-            print(f"Error during API request: {e}")
-            break
+    except requests.exceptions.RequestException as e:
+        print(f"Network error during request: {e}")
+    except Exception as e:
+        print(f"Error processing datasets: {e}")
     
-    print(f"Total datasets retrieved: {len(all_datasets)}")
-    return all_datasets
+    print(f"Successfully processed {len(datasets)} datasets")
+    return datasets
     
 
 def parse_rdf_file(file_path):
