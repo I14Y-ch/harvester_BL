@@ -77,21 +77,30 @@ def parse_rdf_file(file_path):
 
 
 def create_dataset_payload(dataset: Dict, is_update: bool = False) -> Dict:
-    """Creates the JSON payload for dataset submission, handling update requirements."""
+    """Creates properly structured payload with required publisher information."""
     if not isinstance(dataset, dict):
         raise ValueError("Dataset must be a dictionary.")
+    
+    # Ensure publisher exists with required identifier
+    if "publisher" not in dataset:
+        dataset["publisher"] = {}
+    
+    if not isinstance(dataset["publisher"], dict):
+        dataset["publisher"] = {"identifier": str(dataset["publisher"])}
+    
+    if "identifier" not in dataset["publisher"]:
+        dataset["publisher"]["identifier"] = ORGANIZATION_ID  # From config
     
     payload = {
         "data": dataset
     }
-
+    
+    # Add update-specific requirements
     if is_update:
         payload["updateModel"] = {
-            "updateAllFields": True 
+            "updateAllFields": True,  # Or False for partial updates
+            # Add other required update fields if needed
         }
-    
-        if "publisher" not in dataset:
-            dataset["publisher"] = DEFAULT_PUBLISHER
     
     return payload
 
