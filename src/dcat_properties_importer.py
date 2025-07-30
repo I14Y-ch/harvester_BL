@@ -92,7 +92,7 @@ def extract_distributions(graph: Graph, dataset_uri: URIRef) -> List[Dict]:
         
         availability_uri = get_single_resource(graph, distribution_uri, URIRef("http://data.europa.eu/r5r/availability"))
         license_uri = get_single_resource(graph, distribution_uri, DCTERMS.license)
-        license_code = license_uri.split("/")[-1] if license_uri is not None else None
+        license_code = str(license_uri) if license_uri is not None else None
         valid_license = license_code if license_code in VALID_LICENSE_CODES else None
         
         checksum_algorithm = get_literal(graph, distribution_uri, SPDX.checksumAlgorithm)
@@ -248,7 +248,7 @@ def get_coverage(graph: Graph, subject: URIRef) -> List[Dict]:
 def get_spatial(graph: Graph, dataset_uri: URIRef) -> List[str]:
     """Retrieves spatial values as a list of strings."""
     return [
-        str(spatial).split("/")[-1] if isinstance(spatial, URIRef) else str(spatial)
+        str(spatial)
         for spatial in graph.objects(dataset_uri, DCTERMS.spatial)
     ] or []
 
