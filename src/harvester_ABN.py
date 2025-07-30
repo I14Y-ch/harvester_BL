@@ -83,14 +83,7 @@ def create_dataset_payload(dataset: Dict, is_update: bool = False) -> Dict:
     
     # Ensure publisher exists with required identifier
     if "publisher" not in dataset:
-        dataset["publisher"] = {}
-    
-    if not isinstance(dataset["publisher"], dict):
-        dataset["publisher"] = {"identifier": str(dataset["publisher"])}
-    
-    if "identifier" not in dataset["publisher"]:
-        dataset["publisher"]["identifier"] = ORGANIZATION_ID  # From config
-    
+        dataset["publisher"] = DEFAULT_PUBLISHER
     payload = {
         "data": dataset
     }
