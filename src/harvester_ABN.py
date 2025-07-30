@@ -91,9 +91,7 @@ def create_dataset_payload(dataset: Dict, is_update: bool = False) -> Dict:
         }
     
         if "publisher" not in dataset:
-            dataset["publisher"] = {
-                "identifier": ORGANIZATION_ID 
-            }
+            dataset["publisher"] = DEFAULT_PUBLISHER
     
     return payload
 
