@@ -15,7 +15,7 @@ In detail, the process works as follows:
 - **Fetches current datasets**: Retrieves DCAT metadata from Basel-Landschaft API  ( `data.bl.ch/api/explore/v2.1/catalog/exports/dcat`)
 - **Processes each dataset**:
   - Compares with previous version
-  - Identifies new, updated, or unchanged datasets
+  - Identifies new, updated, unchanged or deleted datasets
   - Creates appropriate payload for I14Y API  
 
 ### 3. Dataset Processing Logic
