@@ -1,6 +1,6 @@
 import requests
 from config import *
-from dcat_properties_utils import *
+from dcat_properties_importer import *
 from rdflib import Graph
 from rdflib.namespace import DCAT, RDF
 import json
