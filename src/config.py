@@ -4,30 +4,30 @@ import os
 API_BL_URL = "https://data.bl.ch/api/explore/v2.1/catalog/exports/dcat"
 
 # I14Y API configuration
-API_BASE_URL = "https://api-a.i14y.admin.ch/api/partner/v1"
-API_TOKEN = f"{os.environ['ACCESS_TOKEN']}" 
+API_BASE_URL_DEV = "https://iop-partner-d.app.cfap02.atlantica.admin.ch/api"
+API_BASE_URL = "https://api.i14y.admin.ch/api/partner/v1"
+API_BASE_URL_ABN = "https://api-a.i14y.admin.ch/api/partner/v1"
 
-#IDS_I14Y = json.loads(os.environ['IDS_I14Y'])
+GET_TOKEN_URL_DEV = "https://identity-eiam-r.eiam.admin.ch/realms/edi_bfs-i14y"
+GET_TOKEN_URL_ABN = "https://identity.i14y.a.c.bfs.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token"
+GET_TOKEN_URL_PROD = "https://identity.i14y.c.bfs.admin.ch/realms/bfs-sis-p/protocol/openid-connect/token"
+
+
+# Organization settings
 
 # Organization settings
 ORGANIZATION_ID = "CH_KT_BL"
-DEFAULT_PUBLISHER = {
-    "identifier": ORGANIZATION_ID
-}
+DEFAULT_PUBLISHER = {"identifier": ORGANIZATION_ID}
 
 # Constants
 SUPPORTED_LANGUAGES = ["de", "en", "fr", "it", "rm"]
-DEFAULT_TITLE = {'de': 'Datenexport'}
-DEFAULT_DESCRIPTION = {'de': 'Export der Daten'}
-EXCLUDED_MEDIA_TYPES = ['application/pdf']
-EXCLUDED_FORMAT_CODES = ['PDF']
+DEFAULT_TITLE = {"de": "Datenexport"}
+DEFAULT_DESCRIPTION = {"de": "Export der Daten"}
+EXCLUDED_MEDIA_TYPES = ["application/pdf"]
+EXCLUDED_FORMAT_CODES = ["PDF"]
 
 
 # File format (.xml and .rdf -> "xml", .ttl -> "ttl")
 FILE_FORMAT = "xml"
 
-# Proxies if necessary 
-PROXIES = {
-    "http": "http://proxy...",
-    "https": "http://proxy..."
-}
+I14Y_USER_AGENT = "I14Y BL Harvester (contact: i14y@bfs.admin.ch)"

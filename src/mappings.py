@@ -1,9 +1,10 @@
 # i14y Code: (dcat-ap.ch URI, EU data-theme URI)
+# TODO Sergiy: revert this map + adapt code that uses it, because we use e.g. "Umwelt" as key to access "113"
 THEME_MAPPING = {
     "103": ("Bildung, Kultur und Sport"),
     "106": ("Bevölkerung und Gesellschaft"),
-    "108": ( "Bildung, Kultur und Sport"),
-    "113": ( "Umwelt"),
+    "108": ("Bildung, Kultur und Sport"),
+    "113": ("Umwelt"),
     "114": ("Gesundheit"),
     "115": ("Wirtschaft und Finanzen"),
     "116": ("Verkehr"),
@@ -11,8 +12,7 @@ THEME_MAPPING = {
     "119": ("Regierung und öffentlicher Sektor"),
     "120": ("Regionen und Städte"),
     "122": ("Regionen und Städte"),
-    "124": ( "Energie")
-
+    "124": ("Energie"),
 }
 
 
@@ -35,11 +35,11 @@ MEDIA_TYPE_MAPPING = {
     "https://www.iana.org/assignments/media-types/text/html": "text/html",
     "https://www.iana.org/assignments/media-types/text/n3": "text/n3",
     "https://www.iana.org/assignments/media-types/text/vnd.gml": "text/vnd.gml",
-    "https://www.iana.org/assignments/media-types/text/xml": "text/xml"
+    "https://www.iana.org/assignments/media-types/text/xml": "text/xml",
 }
 
 
-FORMAT_TYPE_MAPPING =  {
+FORMAT_TYPE_MAPPING = {
     "https://www.iana.org/assignments/media-types/application/geo+json": "GEOJSON",
     "https://www.iana.org/assignments/media-types/application/gzip": "GZIP",
     "https://www.iana.org/assignments/media-types/application/json": "JSON",
@@ -58,29 +58,100 @@ FORMAT_TYPE_MAPPING =  {
     "https://www.iana.org/assignments/media-types/text/html": "HTML",
     "https://www.iana.org/assignments/media-types/text/n3": "N3",
     "https://www.iana.org/assignments/media-types/text/vnd.gml": "GML",
-    "https://www.iana.org/assignments/media-types/text/xml": "XML"
+    "https://www.iana.org/assignments/media-types/text/xml": "XML",
 }
 
-VALID_FORMAT_CODES = {"CSV", "DXF", "EPUB", "GDB", "GEOJSON", "GEOTIFF", "GIF", "GML", "GPKG", "GPX",
-    "HTML", "INTERLIS", "JPEG", "JSON", "JSON_LD", "KML", "MP3", "N3", "ODS", "PDF",
-    "PNG", "RDF", "RDF_TURTLE", "RDF_XML", "RSS", "SCHEMA_XML", "SDMX", "SHP", "SKOS_XML",
-    "SPARQLQ", "SQL", "SVG", "TIFF", "TSV", "TXT", "WFS_SRVC", "WMS_SRVC", "WMTS_SRVC",
-    "XLS", "XLSX", "XML", "YAML"}
+VALID_FORMAT_CODES = {
+    "CSV",
+    "DXF",
+    "EPUB",
+    "GDB",
+    "GEOJSON",
+    "GEOTIFF",
+    "GIF",
+    "GML",
+    "GPKG",
+    "GPX",
+    "HTML",
+    "INTERLIS",
+    "JPEG",
+    "JSON",
+    "JSON_LD",
+    "KML",
+    "MP3",
+    "N3",
+    "ODS",
+    "PDF",
+    "PNG",
+    "RDF",
+    "RDF_TURTLE",
+    "RDF_XML",
+    "RSS",
+    "SCHEMA_XML",
+    "SDMX",
+    "SHP",
+    "SKOS_XML",
+    "SPARQLQ",
+    "SQL",
+    "SVG",
+    "TIFF",
+    "TSV",
+    "TXT",
+    "WFS_SRVC",
+    "WMS_SRVC",
+    "WMTS_SRVC",
+    "XLS",
+    "XLSX",
+    "XML",
+    "YAML",
+}
 
+# TODO Sergiy: revert this map + adapt code that uses it
 VOCAB_EU_PLANNED_AVAILABILITY = {
-
-    "AVAILABLE": ("http://publications.europa.eu/resource/authority/planned-availability/AVAILABLE", "http://data.europa.eu/r5r/availability/available" ), 
-    "EXPERIMENTAL": ("http://publications.europa.eu/resource/authority/planned-availability/EXPERIMENTAL", "http://data.europa.eu/r5r/availability/experimental" ),
-    "STABLE": ("http://publications.europa.eu/resource/authority/planned-availability/STABLE", "http://data.europa.eu/r5r/availability/stable"),
-    "TEMPORARY": ("http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY", "http://data.europa.eu/r5r/availability/temporary"), 
-  
+    "AVAILABLE": (
+        "http://publications.europa.eu/resource/authority/planned-availability/AVAILABLE",
+        "http://data.europa.eu/r5r/availability/available",
+    ),
+    "EXPERIMENTAL": (
+        "http://publications.europa.eu/resource/authority/planned-availability/EXPERIMENTAL",
+        "http://data.europa.eu/r5r/availability/experimental",
+    ),
+    "STABLE": (
+        "http://publications.europa.eu/resource/authority/planned-availability/STABLE",
+        "http://data.europa.eu/r5r/availability/stable",
+    ),
+    "TEMPORARY": (
+        "http://publications.europa.eu/resource/authority/planned-availability/TEMPORARY",
+        "http://data.europa.eu/r5r/availability/temporary",
+    ),
 }
 
+# TODO Sergiy: revert this map + adapt code that uses it
 LANGUAGES_MAPPING = {
-    "de": ("de", "DE","http://publications.europa.eu/resource/authority/language/DEU", "http://id.loc.gov/vocabulary/iso639-1/de" ),
-    "fr": ("fr","FR","http://publications.europa.eu/resource/authority/language/FRA", "http://id.loc.gov/vocabulary/iso639-1/fr" ),
-    "it": ("it", "IT","http://publications.europa.eu/resource/authority/language/ITA", "http://id.loc.gov/vocabulary/iso639-1/it" ),
-    "en": ("en", "EN", "http://publications.europa.eu/resource/authority/language/ENG", "http://id.loc.gov/vocabulary/iso639-1/en" )
+    "de": (
+        "de",
+        "DE",
+        "http://publications.europa.eu/resource/authority/language/DEU",
+        "http://id.loc.gov/vocabulary/iso639-1/de",
+    ),
+    "fr": (
+        "fr",
+        "FR",
+        "http://publications.europa.eu/resource/authority/language/FRA",
+        "http://id.loc.gov/vocabulary/iso639-1/fr",
+    ),
+    "it": (
+        "it",
+        "IT",
+        "http://publications.europa.eu/resource/authority/language/ITA",
+        "http://id.loc.gov/vocabulary/iso639-1/it",
+    ),
+    "en": (
+        "en",
+        "EN",
+        "http://publications.europa.eu/resource/authority/language/ENG",
+        "http://id.loc.gov/vocabulary/iso639-1/en",
+    ),
 }
 
-VALID_LICENSE_CODES= {"terms_open", "terms_by", "terms_by_ask", "terms_ask"}
+VALID_LICENSE_CODES = {"terms_open", "terms_by", "terms_by_ask", "terms_ask"}
