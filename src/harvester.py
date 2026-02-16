@@ -170,7 +170,7 @@ class HarvesterBL(CommonI14YAPI):
 
         action = "created"
         if identifier and previous_ids and identifier in previous_ids.keys():
-            dataset_id = previous_ids[identifier]["id"]
+            dataset_id = previous_ids[identifier]
             url = f"{self.api_base_url}/datasets/{dataset_id}"
             response = requests.put(url, json=payload, headers=headers, verify=False)
             action = "updated"
