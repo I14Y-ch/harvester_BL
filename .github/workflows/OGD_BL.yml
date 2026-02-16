@@ -1,80 +1,50 @@
 name: I14Y Harvester OGD canton Basel-Landschaft catalogue ABN
 
 on:
-  schedule:
-    - cron: '0 0 * * 1-5'  # Runs every day at midnight
-  workflow_dispatch:  # Allows manual triggering
+  # schedule:
+  #   - cron: "0 0 * * *" # Runs everyday at midnight
+  workflow_dispatch: # Allows manual triggering
 
 jobs:
   harvest-data:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Download previous data
-      uses: dawidd6/action-download-artifact@v4
-      continue-on-error: true
-      with:
-          name: dataset_ids
-          workflow: OGD_BL.yml
-          workflow_conclusion: success
-          if_no_artifact_found: warn
-          path: OGD_BL/data
-        
-    - name: Set up Python
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.9'
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
 
-    - name: Install dependencies
-      run: pip install -r requirements.txt
-      
-    - name: Get access token
-      id: get-token
-      env:
-        CLIENT_ID: ${{ secrets.CLIENT_ID }}
-        CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
-        ORGANIZATION_ID: ${{ secrets.ORGANIZATION_ID }} 
-      run: |
-        python - <<EOF
-        import requests
-        import os
-    
-        def get_access_token(client_key, client_key_secret):
-            data = {'grant_type': 'client_credentials'}
-            response = requests.post(
-                "https://identity-a.bit.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token",
-                data=data,
-                verify=False,
-                auth=(client_key, client_key_secret)
-            )
-            return response.json()
-    
-        client_id = os.environ['CLIENT_ID']
-        client_secret = os.environ['CLIENT_SECRET']
-        access_token = 'Bearer ' + get_access_token(client_id, client_secret)['access_token']
-        
-        # Write to GITHUB_OUTPUT (modern replacement for set-output)
-        with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
-            f.write(f"access_token={access_token}\n")
-        EOF
-        
-    - name: Run harvester script
-      env:
-        ACCESS_TOKEN: ${{ steps.get-token.outputs.access_token }}
-      run: python src/harvester_ABN.py
-    
-    - name: Upload log
-      uses: actions/upload-artifact@v4
-      with:
-        name: harvest-log
-        path: harvest_log.txt
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-    - name: Upload updated data
-      uses: actions/upload-artifact@v4
-      with:
-        name: dataset_ids
-        path: OGD_BL/data/dataset_ids.json
-        retention-days: 2
+      - name: Run harvester script
+        env:
+          CLIENT_KEY: ${{ secrets.CLIENT_ID_ABN }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_ABN }}
+          GET_TOKEN_URL: "https://identity-a.bit.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token"
+          API_BASE_URL: "https://api-a.i14y.admin.ch/api/partner/v1"
+          IMPORT_STRUCTURES: "False"
+        run: python src/harvester.py
+
+      - name: Upload log
+        uses: actions/upload-artifact@v4
+        with:
+          name: harvest_log
+          path: harvest_log.txt
+
+      - name: Upload structure log
+        uses: actions/upload-artifact@v4
+        with:
+          name: structure_import_log
+          path: structure_import_log.txt
+
+      - name: Upload updated data
+        uses: actions/upload-artifact@v4
+        with:
+          name: datasets
+          path: OGD_OFS/data/datasets.json
+          retention-days: 2
