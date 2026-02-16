@@ -50,7 +50,7 @@ def extract_dataset(graph: Graph, dataset_uri: URIRef) -> Optional[Dict]:
         "documentation": get_resource_list(graph, dataset_uri, FOAF.page),
         "images": get_resource_list(graph, dataset_uri, SCHEMA.image),
         "temporalCoverage": get_temporal_coverage(graph, dataset_uri),
-        "frequency": get_frequency(graph, dataset_uri),
+        "frequency": VOCAB_EU_FREQUENCY[get_frequency(graph, dataset_uri)],
         "isReferencedBy": get_is_referenced_by(graph, dataset_uri),
         "relations": get_relations(graph, dataset_uri),
         "spatial": get_spatial(graph, dataset_uri),

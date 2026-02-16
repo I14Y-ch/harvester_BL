@@ -126,6 +126,19 @@ VOCAB_EU_PLANNED_AVAILABILITY = {
     ),
 }
 
+VOCAB_EU_FREQUENCY = {
+    "annual": "ANNUAL",
+    "biennial": "BIENNIAL",
+    "daily": "DAILY",
+    "monthly": "MONTHLY",
+    "quarterly": "QUARTERLY",
+    "semiannual": "SEMIANNUAL",
+    "weekly": "WEEKLY",
+    "hourly": "HOURLY",
+    "irregular": "IRREG",
+    "continuous": "CONT",
+}
+
 # TODO Sergiy: revert this map + adapt code that uses it
 LANGUAGES_MAPPING = {
     "de": (
