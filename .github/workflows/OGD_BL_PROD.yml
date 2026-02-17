@@ -1,4 +1,4 @@
-name: I14Y Harvester OGD canton Basel-Landschaft catalogue ABN
+name: I14Y Harvester OGD canton Basel-Landschaft catalogue PROD
 
 on:
   schedule:
@@ -23,10 +23,10 @@ jobs:
 
       - name: Run harvester script
         env:
-          CLIENT_KEY: ${{ secrets.CLIENT_ID_ABN }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_ABN }}
-          GET_TOKEN_URL: "https://identity.i14y.a.c.bfs.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token"
-          API_BASE_URL: "https://api-a.i14y.admin.ch/api/partner/v1"
+          CLIENT_KEY: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
+          GET_TOKEN_URL: "https://identity.i14y.c.bfs.admin.ch/realms/bfs-sis-p/protocol/openid-connect/token"
+          API_BASE_URL: "https://api.i14y.admin.ch/api/partner/v1"
           IMPORT_STRUCTURES: "False"
         run: python src/harvester.py
 

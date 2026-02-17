@@ -4,7 +4,7 @@ from time import time
 from typing import Any, Dict
 import requests
 import re
-from config import I14Y_USER_AGENT
+from config import DEBUG_LOCAL_TEST, I14Y_USER_AGENT, ORGANIZATION_ID, PROXIES
 
 
 def reauth_if_token_expired(func):
@@ -59,6 +59,16 @@ class CommonI14YAPI:
             self.client_key = api_params["client_key"]
             self.client_secret = api_params["client_secret"]
             self.identifier_pattern = api_params["identifier_pattern"]
+            self.datasets_file_path = os.path.join(os.getcwd(), "OGD_BL", "data", "datasets.json")
+
+            self.session = requests.Session()
+
+            if DEBUG_LOCAL_TEST:
+                self.session.verify = False
+                self.session.proxies = PROXIES
+            else:
+                self.session.verify = True
+
             self.api_token = self.get_access_token()
         except (KeyError, TypeError):
             exception_str = "You need to provide the following parameters in a dict:"
@@ -75,10 +85,9 @@ class CommonI14YAPI:
     def get_access_token(self):
         """Generated an access token from client key and client secret"""
         data = {"grant_type": "client_credentials"}
-        response = requests.post(
+        response = self.session.post(
             self.api_get_token_url,
             data=data,
-            verify=False,
             auth=(self.client_key, self.client_secret),
         )
         if response.status_code >= 400:
@@ -104,7 +113,7 @@ class CommonI14YAPI:
                 "pageSize": pageSize,
                 "page": i,
             }
-            response = requests.get(url, params=params, headers=headers, verify=False)
+            response = self.session.get(url, params=params, headers=headers)
             response.raise_for_status()
             data = response.json()
             for dataset in data["data"]:
@@ -115,6 +124,7 @@ class CommonI14YAPI:
             i += 1
             has_more = len(data["data"]) > 0
 
+        print(f"Fetched {len(all_datasets)} datasets from i14y for organization {ORGANIZATION_ID}")
         return all_datasets
 
     def save_data(self, data: Dict[str, Any], file_path: str) -> None:

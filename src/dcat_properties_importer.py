@@ -32,7 +32,7 @@ def extract_dataset(graph: Graph, dataset_uri: URIRef) -> Optional[Dict]:
         dataset_number = original_identifier.split("/dataset/")[-1].rstrip("/")
 
     new_identifier = f"CH_KT_BL_dataset_{dataset_number}" if dataset_number else original_identifier
-    identifiers = [new_identifier, original_identifier] if dataset_number else [original_identifier]
+    identifiers = [new_identifier] if dataset_number else [original_identifier]
 
     dataset = {
         "identifiers": identifiers,
@@ -50,7 +50,7 @@ def extract_dataset(graph: Graph, dataset_uri: URIRef) -> Optional[Dict]:
         "documentation": get_resource_list(graph, dataset_uri, FOAF.page),
         "images": get_resource_list(graph, dataset_uri, SCHEMA.image),
         "temporalCoverage": get_temporal_coverage(graph, dataset_uri),
-        "frequency": VOCAB_EU_FREQUENCY[get_frequency(graph, dataset_uri)],
+        "frequency": get_frequency(graph, dataset_uri),
         "isReferencedBy": get_is_referenced_by(graph, dataset_uri),
         "relations": get_relations(graph, dataset_uri),
         "spatial": get_spatial(graph, dataset_uri),
@@ -267,7 +267,7 @@ def get_spatial(graph: Graph, dataset_uri: URIRef) -> List[str]:
 def get_frequency(graph: Graph, subject: URIRef) -> Optional[Dict]:
     """Retrieves frequency from RDF graph."""
     frequency_uri = get_single_resource(graph, subject, DCTERMS.accrualPeriodicity)
-    return {"code": frequency_uri.split("/")[-1]} if frequency_uri is not None else None
+    return {"code": VOCAB_EU_FREQUENCY[frequency_uri.split("/")[-1]]} if frequency_uri is not None else None
 
 
 def get_themes(graph: Graph, subject: URIRef, predicate: URIRef) -> List[Dict]:
