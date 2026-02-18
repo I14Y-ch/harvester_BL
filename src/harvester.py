@@ -116,11 +116,9 @@ class HarvesterBL(CommonI14YAPI):
                 headers={
                     "Authorization": self.api_token,
                     "Content-Type": "application/json",
-                    "Accept": "*/*",
-                    "Accept-encoding": "json",
+                    "Accept": "application/json",
                     "User-Agent": I14Y_USER_AGENT,
                 },
-                verify=False,
             )
             response.raise_for_status()
         except requests.HTTPError as e:
@@ -137,8 +135,7 @@ class HarvesterBL(CommonI14YAPI):
             headers={
                 "Authorization": self.api_token,
                 "Content-Type": "application/json",
-                "Accept": "*/*",
-                "Accept-encoding": "json",
+                "Accept": "application/json",
                 "User-Agent": I14Y_USER_AGENT,
             },
         )
@@ -150,6 +147,7 @@ class HarvesterBL(CommonI14YAPI):
         headers = {
             "Authorization": self.api_token,
             "Content-Type": "application/json",
+            "Accept": "application/json",
             "User-Agent": I14Y_USER_AGENT,
         }
         try:
@@ -180,6 +178,7 @@ class HarvesterBL(CommonI14YAPI):
             "Authorization": self.api_token,
             "Content-Type": "application/json",
             "User-Agent": I14Y_USER_AGENT,
+            "Accept": "application/json",
         }
 
         action = "created"
@@ -196,10 +195,6 @@ class HarvesterBL(CommonI14YAPI):
             response.raise_for_status()
 
         body = (response.text or "").strip()
-
-        if action == "updated":
-            returned_id = body.strip('"') if body else dataset_id
-            return returned_id, action
 
         returned_id = body.strip('"') if body else dataset_id
         return returned_id, action

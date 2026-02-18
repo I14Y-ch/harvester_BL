@@ -70,6 +70,9 @@ def extract_dataset(graph: Graph, dataset_uri: URIRef) -> Optional[Dict]:
         ),
     }
 
+    if not dataset["frequency"]:
+        del dataset["frequency"]
+
     if not dataset["description"]:
         print("no description found")
         return None
@@ -267,7 +270,7 @@ def get_spatial(graph: Graph, dataset_uri: URIRef) -> List[str]:
 def get_frequency(graph: Graph, subject: URIRef) -> Optional[Dict]:
     """Retrieves frequency from RDF graph."""
     frequency_uri = get_single_resource(graph, subject, DCTERMS.accrualPeriodicity)
-    return {"code": VOCAB_EU_FREQUENCY[frequency_uri.split("/")[-1]]} if frequency_uri is not None else None
+    return {"code": VOCAB_EU_FREQUENCY[frequency_uri.split("/")[-1]]} if frequency_uri else None
 
 
 def get_themes(graph: Graph, subject: URIRef, predicate: URIRef) -> List[Dict]:
