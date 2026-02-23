@@ -24,7 +24,7 @@ jobs:
         env:
           CLIENT_KEY: ${{ secrets.CLIENT_ID_PROD }}
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_PROD }}
-          GET_TOKEN_URL: "https://identity.i14y.a.c.bfs.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token"
+          GET_TOKEN_URL: "https://identity.i14y.c.bfs.admin.ch/realms/bfs-sis-p/protocol/openid-connect/token"
           API_BASE_URL: "https://api.i14y.admin.ch/api/partner/v1"
           IMPORT_ALL: "True"
         run: python src/structure_importer.py

@@ -360,6 +360,9 @@ class StructureImporter(CommonI14YAPI):
 
         print("Log saved to structure_import_log.txt")
 
+        if errors > 0:
+            raise Exception("There were errors in structure import script")
+
 
 if __name__ == "__main__":
     api_params = {
