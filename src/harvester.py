@@ -14,6 +14,8 @@ import urllib3
 import traceback
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
+from structure_importer import StructureImporter
+
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
@@ -340,8 +342,12 @@ if __name__ == "__main__":
         "api_get_token_url": os.environ["GET_TOKEN_URL"],
         "api_base_url": os.environ["API_BASE_URL"],
         "organization_id": ORGANIZATION_ID,
-        "identifier_pattern": re.compile(r"^CH_KT_BL_dataset_\d+$"),
+        "identifier_pattern": re.compile(r"^CH_KT_BL_dataset_(\d+)$"),
     }
 
     harvester = HarvesterBL(api_params)
     harvester.harvest()
+
+    import_structures = os.environ.get("IMPORT_STRUCTURES", "False") == "True"
+    if import_structures:
+        StructureImporter.execute(api_params)
