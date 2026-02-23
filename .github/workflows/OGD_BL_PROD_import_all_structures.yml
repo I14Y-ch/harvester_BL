@@ -22,8 +22,8 @@ jobs:
 
       - name: Run structure importer script
         env:
-          CLIENT_KEY: ${{ secrets.CLIENT_ID_PROD }}
-          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_PROD }}
+          CLIENT_KEY: ${{ secrets.CLIENT_ID }}
+          CLIENT_SECRET: ${{ secrets.CLIENT_SECRET }}
           GET_TOKEN_URL: "https://identity.i14y.c.bfs.admin.ch/realms/bfs-sis-p/protocol/openid-connect/token"
           API_BASE_URL: "https://api.i14y.admin.ch/api/partner/v1"
           IMPORT_ALL: "True"
