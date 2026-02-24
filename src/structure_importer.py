@@ -117,6 +117,8 @@ class StructureImporter(CommonI14YAPI):
                 "gYear": XSD_NS.gYear,
                 "date": XSD_NS.date,
                 "boolean": XSD_NS.boolean,
+                "dateTime": XSD_NS.dateTime,
+                "anyURI": XSD_NS.anyURI,
             }
             datatype = datatype_map.get(prop["datatype"], XSD_NS.string)
             g.add((prop_uri, SH_NS.datatype, datatype))
@@ -233,8 +235,9 @@ class StructureImporter(CommonI14YAPI):
                 "float": "decimal",
                 "boolean": "boolean",
                 "date": "date",
-                "datetime": "string",
-                "timestamp": "string",
+                "datetime": "dateTime",
+                "timestamp": "dateTime",
+                "url": "anyURI",
                 "geo_shape": "string",
                 "geo_point_2d": "string",
             }
