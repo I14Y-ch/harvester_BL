@@ -8,6 +8,7 @@ from rdflib import DCTERMS, RDF, RDFS, SH, XSD, Graph, Literal, Namespace
 import urllib3
 from common import CommonI14YAPI, reauth_if_token_expired
 from config import I14Y_USER_AGENT, MAX_WORKERS, ORGANIZATION_ID
+from utils import remove_html_tags
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -234,14 +235,14 @@ class StructureImporter(CommonI14YAPI):
                     {
                         "name": field["name"],
                         "datatype": datatype_map.get(ods_type, "string"),
-                        "labels": {lang: field.get("label", field["name"])},
+                        "labels": {lang: remove_html_tags(field.get("label", field["name"]))},
                     }
                 )
 
             return {
                 "identifier": identifier,
-                "title": {lang: metas_default.get("title", "")},
-                "description": {lang: metas_default.get("description", "")},
+                "title": {lang: remove_html_tags(metas_default.get("title", ""))},
+                "description": {lang: remove_html_tags(metas_default.get("description", ""))},
                 "properties": properties,
             }
         else:
