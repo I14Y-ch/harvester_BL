@@ -4,7 +4,7 @@ import os
 import re
 from typing import Dict
 
-from rdflib import DCTERMS, RDF, RDFS, SH, XSD, Graph, Literal, Namespace
+from rdflib import DCTERMS, RDF, RDFS, SH, XSD, Graph, Literal, Namespace, URIRef
 import urllib3
 from common import CommonI14YAPI, reauth_if_token_expired
 from config import I14Y_USER_AGENT, MAX_WORKERS, ORGANIZATION_ID
@@ -125,6 +125,17 @@ class StructureImporter(CommonI14YAPI):
             for lang, label in prop["labels"].items():
                 g.add((prop_uri, SH_NS.name, Literal(label, lang=lang)))
 
+            if prop.get("pattern"):
+                g.add((prop_uri, SH_NS.pattern, Literal(prop["pattern"])))
+
+            if prop.get("conformsTo"):
+                g.add((prop_uri, DCTERMS_NS.conformsTo, URIRef(prop["conformsTo"])))
+
+            if prop.get("description"):
+                for lang, desc in prop["description"].items():
+                    if desc:
+                        g.add((prop_uri, SH_NS.description, Literal(desc, lang=lang)))
+
         return g.serialize(format="turtle")
 
     @reauth_if_token_expired
@@ -224,6 +235,8 @@ class StructureImporter(CommonI14YAPI):
                 "date": "date",
                 "datetime": "string",
                 "timestamp": "string",
+                "geo_shape": "string",
+                "geo_point_2d": "string",
             }
 
             properties = []
@@ -231,13 +244,29 @@ class StructureImporter(CommonI14YAPI):
             for field in raw_metadata.get("fields", []):
                 ods_type = field.get("type", "").lower()
 
-                properties.append(
-                    {
-                        "name": field["name"],
-                        "datatype": datatype_map.get(ods_type, "string"),
-                        "labels": {lang: remove_html_tags(field.get("label", field["name"]))},
+                p = {
+                    "name": field["name"],
+                    "datatype": datatype_map.get(ods_type, "string"),
+                    "labels": {lang: remove_html_tags(field.get("label", field["name"]))},
+                }
+
+                if ods_type == "geo_shape":
+                    # BL: GeoJSON "geometry" object (type + coordinates)
+                    p["conformsTo"] = "https://datatracker.ietf.org/doc/html/rfc7946#section-3.1"
+                    p["pattern"] = (
+                        r'^\s*\{\s*"coordinates"\s*:\s*\[.*\]\s*,\s*"type"\s*:\s*"(Polygon|MultiPolygon|Point|MultiPoint|LineString|MultiLineString|GeometryCollection)"\s*\}\s*$'
+                    )
+                    p["description"] = {
+                        "en": "GeoJSON geometry object (RFC 7946 §3.1): JSON object with 'type' and 'coordinates' array."
                     }
-                )
+
+                elif ods_type == "geo_point_2d":
+                    # BL: 2D position array (exactly 2 numbers)
+                    p["conformsTo"] = "https://datatracker.ietf.org/doc/html/rfc7946#section-3.1.1"
+                    p["pattern"] = r"^\s*\[\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*\]\s*$"
+                    p["description"] = {"en": "2D position array (RFC 7946 §3.1.1): [number, number]."}
+
+                properties.append(p)
 
             return {
                 "identifier": identifier,
