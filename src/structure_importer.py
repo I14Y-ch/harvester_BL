@@ -269,6 +269,10 @@ class StructureImporter(CommonI14YAPI):
                     p["pattern"] = r"^\s*\[\s*-?\d+(\.\d+)?\s*,\s*-?\d+(\.\d+)?\s*\]\s*$"
                     p["description"] = {"en": "2D position array (RFC 7946 §3.1.1): [number, number]."}
 
+                description = field.get("description", "")
+                if description and description.startswith("conformsTo "):
+                    p["conformsTo"] = description.removeprefix("conformsTo ")
+
                 properties.append(p)
 
             return {
