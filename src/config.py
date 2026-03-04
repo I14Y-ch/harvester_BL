@@ -32,7 +32,12 @@ FILE_FORMAT = "xml"
 
 I14Y_USER_AGENT = "I14Y BL Harvester (contact: i14y@bfs.admin.ch)"
 
+# Useful when running from admin network
 DEBUG_LOCAL_TEST = os.environ.get("DEBUG_LOCAL_TEST", "false") == "true"
 PROXIES = {"http": "http://proxy-bvcol.admin.ch:8080", "https": "http://proxy-bvcol.admin.ch:8080"}
 
-MAX_WORKERS = 5
+# Useful when e.g. we have to change the parsing of the description, becausae the source of truth is on data.bl.ch, we can delete everything from i14y and reimport later
+DELETE_ALL = os.environ.get("DELETE_ALL", "false") == "true"
+
+# TODO Sergiy: increase max_workers from 1 once we have fixed Lucene index write lock issues in iop-core
+MAX_WORKERS = 1

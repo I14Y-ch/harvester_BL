@@ -33,6 +33,14 @@ class HarvesterBL(CommonI14YAPI):
         """
         super().__init__(api_params)
 
+    def get_opendatasoft_tags(self, original_identifier, base_url="https://data.bl.ch"):
+        url = f"{base_url}/api/datasets/1.0/{original_identifier}/?format=json"
+        response = self.session.get(url)
+        response.raise_for_status()
+        data = response.json()
+        tags = data.get("metas", {}).get("tags")
+        return tags
+
     def fetch_datasets_from_api(self) -> List[Dict]:
         """Fetches all available datasets from the DCAT API in a single request"""
         datasets = []
@@ -64,7 +72,12 @@ class HarvesterBL(CommonI14YAPI):
                 dataset = extract_dataset(graph, dataset_uri)
 
                 if dataset and isinstance(dataset, dict):
-                    datasets.append(dataset)
+                    original_identifier = dataset["identifiers"][0].removeprefix("CH_KT_BL_dataset_")
+                    tags = self.get_opendatasoft_tags(original_identifier)
+                    if DELETE_ALL or tags and "opendata.swiss" in tags:
+                        datasets.append(dataset)
+                    else:
+                        print(f"Skipping dataset without opendata.swiss tag: {dataset_uri}")
                 else:
                     print(f"Skipping invalid dataset: {dataset_uri}")
 
@@ -183,6 +196,9 @@ class HarvesterBL(CommonI14YAPI):
             "Accept": "application/json",
         }
 
+        if DEBUG_LOCAL_TEST:
+            print(f"submit_to_api for identifier {identifier}")
+
         action = "created"
         if identifier and previous_ids and identifier in previous_ids.keys():
             dataset_id = previous_ids[identifier]
@@ -276,27 +292,32 @@ class HarvesterBL(CommonI14YAPI):
         all_existing_datasets = self.get_all_existing_datasets(self.organization)
         all_existing_datasets_identifier_id_map = self.get_all_identifier_id_map(all_existing_datasets)
 
-        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-            futures = [
-                executor.submit(
-                    self._process_one_dataset,
-                    dataset,
-                    all_existing_datasets_identifier_id_map,
-                    yesterday,
-                )
-                for dataset in datasets
-            ]
+        if not DELETE_ALL:
 
-            for future in as_completed(futures):
-                result = future.result()
-                status = result["status"]
-                identifier = result["identifier"]
-                dataset_id = result["dataset_id"]
+            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+                futures = [
+                    executor.submit(
+                        self._process_one_dataset,
+                        dataset,
+                        all_existing_datasets_identifier_id_map,
+                        yesterday,
+                    )
+                    for dataset in datasets
+                ]
 
-                if status in dataset_status_identifier_id_map and dataset_id:
-                    dataset_status_identifier_id_map[status][identifier] = dataset_id
+                for future in as_completed(futures):
+                    result = future.result()
+                    status = result["status"]
+                    identifier = result["identifier"]
+                    dataset_id = result["dataset_id"]
+
+                    if status in dataset_status_identifier_id_map and dataset_id:
+                        dataset_status_identifier_id_map[status][identifier] = dataset_id
 
         datasets_to_delete = set(all_existing_datasets_identifier_id_map.keys()) - current_source_identifiers
+
+        if DELETE_ALL:
+            datasets_to_delete |= current_source_identifiers
 
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             delete_futures = [
@@ -306,6 +327,7 @@ class HarvesterBL(CommonI14YAPI):
                     all_existing_datasets_identifier_id_map[identifier],
                 )
                 for identifier in datasets_to_delete
+                if identifier in all_existing_datasets_identifier_id_map.keys()
             ]
 
             for future in as_completed(delete_futures):

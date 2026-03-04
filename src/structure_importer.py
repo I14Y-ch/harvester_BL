@@ -343,8 +343,7 @@ class StructureImporter(CommonI14YAPI):
                 continue
             jobs.append((identifier, dataset_id))
 
-        # TODO Sergiy: increase max_workers from 1 once we have fixed Lucene index write lock issues in iop-core
-        with ThreadPoolExecutor(max_workers=1) as executor:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             futures = [
                 executor.submit(self._process_one_structure_job, identifier, dataset_id)
                 for identifier, dataset_id in jobs

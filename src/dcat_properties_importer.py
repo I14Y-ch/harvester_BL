@@ -186,12 +186,50 @@ def get_languages(graph: Graph, subject: URIRef, predicate: URIRef) -> List[Dict
     ]
 
 
+def html_to_text_preserve_structure(html: str) -> str:
+    s = html
+
+    # Convert links: <a href="URL">Text</a> -> Text (URL)
+    s = re.sub(
+        r'<a\b[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>',
+        r"\2 (\1) ",
+        s,
+        flags=re.IGNORECASE | re.DOTALL,
+    )
+
+    # Preserve bullet points
+    s = re.sub(r"<li\b[^>]*>", "\n- ", s, flags=re.IGNORECASE)
+
+    # Preserve paragraph breaks
+    s = re.sub(r"</p\s*>", "\n\n", s, flags=re.IGNORECASE)
+
+    # Preserve <br>
+    s = re.sub(r"<br\s*/?>", "\n", s, flags=re.IGNORECASE)
+
+    # Remove remaining HTML
+    s = remove_html_tags(s)
+
+    # Replace non-breaking spaces
+    s = s.replace("\xa0", " ")
+
+    # Normalize whitespace
+    s = re.sub(r"[ \t]+\n", "\n", s)  # remove spaces before newline
+    s = re.sub(r"\n{3,}", "\n\n", s)  # max two consecutive newlines
+    s = re.sub(r" {2,}", " ", s)  # collapse multiple spaces
+
+    return s.strip()
+
+
 def get_multilingual_literal(graph: Graph, subject: URIRef, predicate: URIRef) -> Dict[str, str]:
     """Retrieves multilingual literals from RDF graph."""
     values = {lang: "" for lang in SUPPORTED_LANGUAGES}
     for obj in graph.objects(subject, predicate):
         if isinstance(obj, Literal) and obj.language in values:
-            values[obj.language] = remove_html_tags(str(obj))
+            if predicate == DCTERMS.description:
+                s = html_to_text_preserve_structure(str(obj))
+            else:
+                s = str(obj)
+            values[obj.language] = remove_html_tags(s)
     return {lang: value for lang, value in values.items() if value}
 
 
