@@ -26,7 +26,7 @@ jobs:
           CLIENT_SECRET: ${{ secrets.CLIENT_SECRET_ABN }}
           GET_TOKEN_URL: "https://identity.i14y.a.c.bfs.admin.ch/realms/bfs-sis-a/protocol/openid-connect/token"
           API_BASE_URL: "https://api-a.i14y.admin.ch/api/partner/v1"
-          IMPORT_ALL: "True"
+          IMPORT_ALL: "true"
         run: python src/structure_importer.py
 
       - name: Upload structure log

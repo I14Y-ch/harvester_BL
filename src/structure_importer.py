@@ -406,6 +406,6 @@ if __name__ == "__main__":
         "identifier_pattern": re.compile(r"^CH_KT_BL_dataset_(\d+)$"),
     }
 
-    import_all = os.environ.get("IMPORT_ALL", "False") == "True"
+    import_all = os.environ.get("IMPORT_ALL", "false") == "true"
 
     StructureImporter.execute(api_params, import_all=import_all)

@@ -199,6 +199,8 @@ def html_to_text_preserve_structure(html: str) -> str:
 
     # Preserve bullet points
     s = re.sub(r"<li\b[^>]*>", "\n- ", s, flags=re.IGNORECASE)
+    s = re.sub(r"</li\s*>", "\n", s, flags=re.IGNORECASE)
+    s = re.sub(r"</ul\s*>|</ol\s*>", "\n\n", s, flags=re.IGNORECASE)
 
     # Preserve paragraph breaks
     s = re.sub(r"</p\s*>", "\n\n", s, flags=re.IGNORECASE)

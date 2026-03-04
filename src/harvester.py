@@ -74,7 +74,7 @@ class HarvesterBL(CommonI14YAPI):
                 if dataset and isinstance(dataset, dict):
                     original_identifier = dataset["identifiers"][0].removeprefix("CH_KT_BL_dataset_")
                     tags = self.get_opendatasoft_tags(original_identifier)
-                    if DELETE_ALL or tags and "opendata.swiss" in tags:
+                    if tags and "opendata.swiss" in tags:
                         datasets.append(dataset)
                     else:
                         print(f"Skipping dataset without opendata.swiss tag: {dataset_uri}")
@@ -237,7 +237,7 @@ class HarvesterBL(CommonI14YAPI):
         created_date = self.parse_date(dataset.get("issued", dataset.get("modified")))
 
         is_new_dataset = identifier not in all_existing_map.keys()
-        is_updated_dataset = modified_date and modified_date > yesterday
+        is_updated_dataset = UPDATE_ALL or modified_date and modified_date > yesterday
 
         existing_dataset_id = all_existing_map[identifier] if identifier in all_existing_map.keys() else None
 
@@ -292,32 +292,27 @@ class HarvesterBL(CommonI14YAPI):
         all_existing_datasets = self.get_all_existing_datasets(self.organization)
         all_existing_datasets_identifier_id_map = self.get_all_identifier_id_map(all_existing_datasets)
 
-        if not DELETE_ALL:
+        with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+            futures = [
+                executor.submit(
+                    self._process_one_dataset,
+                    dataset,
+                    all_existing_datasets_identifier_id_map,
+                    yesterday,
+                )
+                for dataset in datasets
+            ]
 
-            with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-                futures = [
-                    executor.submit(
-                        self._process_one_dataset,
-                        dataset,
-                        all_existing_datasets_identifier_id_map,
-                        yesterday,
-                    )
-                    for dataset in datasets
-                ]
+            for future in as_completed(futures):
+                result = future.result()
+                status = result["status"]
+                identifier = result["identifier"]
+                dataset_id = result["dataset_id"]
 
-                for future in as_completed(futures):
-                    result = future.result()
-                    status = result["status"]
-                    identifier = result["identifier"]
-                    dataset_id = result["dataset_id"]
-
-                    if status in dataset_status_identifier_id_map and dataset_id:
-                        dataset_status_identifier_id_map[status][identifier] = dataset_id
+                if status in dataset_status_identifier_id_map and dataset_id:
+                    dataset_status_identifier_id_map[status][identifier] = dataset_id
 
         datasets_to_delete = set(all_existing_datasets_identifier_id_map.keys()) - current_source_identifiers
-
-        if DELETE_ALL:
-            datasets_to_delete |= current_source_identifiers
 
         with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
             delete_futures = [
@@ -370,6 +365,6 @@ if __name__ == "__main__":
     harvester = HarvesterBL(api_params)
     harvester.harvest()
 
-    import_structures = os.environ.get("IMPORT_STRUCTURES", "False") == "True"
+    import_structures = os.environ.get("IMPORT_STRUCTURES", "false") == "true"
     if import_structures:
         StructureImporter.execute(api_params)
