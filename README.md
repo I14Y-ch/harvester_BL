@@ -38,7 +38,7 @@ prov.qualifiedAttribution and prov.qualifiedRelation are not supported automatic
 - Supported properties for dcat.Distribution:
 
 | Property                                                                     | Requirement level |
-| ---------------------------------------------------------------------------- | ----------------- | --- |
+| ---------------------------------------------------------------------------- | ----------------- |
 | **dct:title** (if not stated, set automatically to 'Datenexport')            | mandatory         |
 | **dct:description** (if not stated, set automatically to 'Export der Daten') | mandatory         |
 | **dcat:accessURL**                                                           | mandatory         |
@@ -50,7 +50,7 @@ prov.qualifiedAttribution and prov.qualifiedRelation are not supported automatic
 | **dct:language**                                                             | optional          |
 | **schema:image**                                                             | optional          |
 | **dcat:spatialResolutionInMeters**                                           | optional          |
-| **dcat:temporalResolution**                                                  | optional          |     |
+| **dcat:temporalResolution**                                                  | optional          |
 | **dct:conformsTo**                                                           | optional          |
 | **dcat:mediaType**                                                           | optional          |
 | **dct:format**                                                               | optional          |
