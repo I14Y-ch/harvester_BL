@@ -7,7 +7,7 @@ from typing import Dict
 from rdflib import DCTERMS, RDF, RDFS, SH, XSD, Graph, Literal, Namespace, URIRef
 import urllib3
 from common import CommonI14YAPI, reauth_if_token_expired
-from config import I14Y_USER_AGENT, MAX_WORKERS, ORGANIZATION_ID
+from config import DESCRIPTION_CONFORMSTO_PREFIX, I14Y_USER_AGENT, MAX_WORKERS, ORGANIZATION_ID
 from utils import remove_html_tags
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
@@ -270,8 +270,8 @@ class StructureImporter(CommonI14YAPI):
                     p["description"] = {"en": "2D position array (RFC 7946 §3.1.1): [number, number]."}
 
                 description = field.get("description", "")
-                if description and description.startswith("conformsTo "):
-                    p["conformsTo"] = description.removeprefix("conformsTo ")
+                if description and description.startswith(DESCRIPTION_CONFORMSTO_PREFIX):
+                    p["conformsTo"] = description.removeprefix(DESCRIPTION_CONFORMSTO_PREFIX)
 
                 properties.append(p)
 

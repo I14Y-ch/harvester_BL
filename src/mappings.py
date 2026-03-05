@@ -1,18 +1,26 @@
 # i14y Code: (dcat-ap.ch URI, EU data-theme URI)
-# TODO Sergiy: revert this map + adapt code that uses it, because we use e.g. "Umwelt" as key to access "113"
+# TODO Sergiy: revert this map + adapt code that uses it, because we use
+# e.g. "Umwelt" as key to access "113", but we have "113" as key and "Umwelt" as value in the python dict
 THEME_MAPPING = {
+    "102": ("Bevölkerung und Gesellschaft"),
     "103": ("Bildung, Kultur und Sport"),
     "106": ("Bevölkerung und Gesellschaft"),
+    "107": ("Regierung und öffentlicher Sektor"),
     "108": ("Bildung, Kultur und Sport"),
+    "109": ("Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel"),
+    "111": ("Justiz, Rechtssystem und öffentliche Sicherheit"),
+    "112": ("Wirtschaft und Finanzen"),
     "113": ("Umwelt"),
     "114": ("Gesundheit"),
     "115": ("Wirtschaft und Finanzen"),
     "116": ("Verkehr"),
     "117": ("Bevölkerung und Gesellschaft"),
-    "119": ("Regierung und öffentlicher Sektor"),
-    "120": ("Regionen und Städte"),
+    "118": ("Wirtschaft und Finanzen"),
+    "119": ("Wirtschaft und Finanzen"),
+    "121": ("Landwirtschaft, Fischerei, Forstwirtschaft und Nahrungsmittel"),
     "122": ("Regionen und Städte"),
     "124": ("Energie"),
+    "126": ("Bevölkerung und Gesellschaft"),
 }
 
 

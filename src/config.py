@@ -41,3 +41,5 @@ UPDATE_ALL = os.environ.get("UPDATE_ALL", "false") == "true"
 
 # TODO Sergiy: increase max_workers from 1 once we have fixed Lucene index write lock issues in iop-core
 MAX_WORKERS = 1
+
+DESCRIPTION_CONFORMSTO_PREFIX = "conformsTo:"
