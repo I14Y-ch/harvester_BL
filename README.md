@@ -120,6 +120,8 @@ For technical reasons we added a new identifier to each dataset as follows:
 
 ### Theme Mapping
 
+See [I14Y themes vocabulary](https://www.i14y.admin.ch/en/catalog/concepts/08da58dc-4dc8-f9cb-b6f2-7d16b3fa0cde/content)
+
 We mapped the BL themes to our themes:
 
 ```python
