@@ -293,9 +293,6 @@ class StructureImporter(CommonI14YAPI):
         if not dataset_data:
             return False
 
-        print(f"\tDeleting existing structure (dataset was updated)")
-        self.delete_structure(dataset_id)
-
         metadata = self.get_bl_metadata(identifier)
 
         if not metadata:
