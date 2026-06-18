@@ -286,6 +286,8 @@ class HarvesterBL(CommonI14YAPI):
 
         print("Fetching datasets from API...")
         datasets = self.fetch_datasets_from_api()
+        if not datasets:
+            raise RuntimeError("No datasets fetched from API. Aborting harvest to avoid deleting production datasets.")
         print("\nStarting dataset import...\n")
 
         current_source_identifiers = {dataset["identifiers"][0] for dataset in datasets}
