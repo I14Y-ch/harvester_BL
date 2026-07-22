@@ -1,5 +1,6 @@
 import json
 import os
+from functools import wraps
 from time import time
 from typing import Any, Dict
 import requests
@@ -10,15 +11,27 @@ from config import DEBUG_LOCAL_TEST, I14Y_USER_AGENT, ORGANIZATION_ID, PROXIES
 def reauth_if_token_expired(func):
     """Decorator to reauth before rerunning function if token is expired"""
 
+    @wraps(func)
     def wrap_func(self, *args, **kwargs):
         try:
             return func(self, *args, **kwargs)
         except requests.HTTPError as e:
-            print(f"{e.request.method}  {e.request.url}", flush=True)
-            print(f"API error: {e.response.status_code} - {e.response.text}")
-            if e.response.status_code == 401:
+            request = getattr(e, "request", None)
+            response = getattr(e, "response", None)
+            method = getattr(request, "method", "UNKNOWN")
+            url = getattr(request, "url", "Unknown url")
+            status_code = response.status_code if response is not None else "?"
+            response_text = response.text if response is not None else str(e)
+
+            print(f"{method} {url}")
+            print(f"API error: {status_code} - {response_text}")
+
+            # Refresh only on expired token and retry once.
+            if status_code == 401:
                 self.api_token = self.get_access_token()
-            return func(self, *args, **kwargs)
+                return func(self, *args, **kwargs)
+
+            raise
 
     return wrap_func
 
