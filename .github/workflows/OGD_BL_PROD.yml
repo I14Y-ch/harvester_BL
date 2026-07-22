@@ -1,4 +1,4 @@
-name: I14Y Harvester OGD canton Basel-Landschaft catalogue PROD
+name: PROD - I14Y Harvester OGD canton Basel-Landschaft catalogue
 
 on:
   schedule:
